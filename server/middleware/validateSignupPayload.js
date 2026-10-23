@@ -1,4 +1,4 @@
-import Users from "../models/Users";
+import Users from "../models/Users.js";
 
 async function validateSignupDetails(req, res, next) {
     try {
@@ -17,7 +17,7 @@ async function validateSignupDetails(req, res, next) {
                     .json({ error: "Invalid or missing email format" });
 
             if (property === "email") {
-                const user = await Users.findOne({ email });
+                const user = await Users.findOne({ email: req.body[property] });
                 if (user)
                     return res.status(400).json({ error: "Email already in use." })
             }
