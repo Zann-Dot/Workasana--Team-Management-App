@@ -1,4 +1,6 @@
-function validateSignupDetails(req, res, next) {
+import Users from "../models/Users";
+
+async function validateSignupDetails(req, res, next) {
     try {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*_]).{8,}$/;
@@ -13,6 +15,12 @@ function validateSignupDetails(req, res, next) {
                 return res
                     .status(400)
                     .json({ error: "Invalid or missing email format" });
+
+            if (property === "email") {
+                const user = await Users.findOne({ email });
+                if (user)
+                    return res.status(400).json({ error: "Email already in use." })
+            }
 
             if (property === "password" && !passwordRegex.test(req.body[property]))
                 return res.status(400).json({
