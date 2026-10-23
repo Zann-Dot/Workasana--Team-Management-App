@@ -1,12 +1,17 @@
 import connectDB from "./db/db.connect.js";
 import e from "express";
+import userRouter from "./routes/user.route.js";
+import cookieParser from "cookie-parser"
 const app = e();
 app.use(e.json());
+app.use(cookieParser())
 connectDB();
 const PORT = 3000
 app.get("/", (req, res) => {
     res.json({ message: "workasana server, search endpoints for data view" })
 })
+
+app.use("/api", userRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
