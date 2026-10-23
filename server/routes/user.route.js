@@ -6,9 +6,8 @@ const userRouter = express.Router();
 
 userRouter.post("/auth/signup", validateSignupDetails, async (req, res) => {
    try {
-      const { email, name, password } = req.body;
-      const hash = await getHashedPassword(password);
-      const user = await Users.create({ email, name, password: hash });
+      const hash = await getHashedPassword(req.body.password);
+      const user = await Users.create({ ...req.body, password: hash });
       res.json({
          success: true,
          message: "user registered successfully",
