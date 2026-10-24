@@ -2,6 +2,7 @@ import connectDB from "./db/db.connect.js";
 import e from "express";
 import userRouter from "./routes/user.route.js";
 import cookieParser from "cookie-parser"
+import taskRouter from "./routes/task.route.js";
 const app = e();
 app.use(e.json());
 app.use(cookieParser())
@@ -12,6 +13,7 @@ app.get("/", (req, res) => {
 })
 
 app.use("/api", userRouter);
+app.use("/api", taskRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

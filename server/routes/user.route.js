@@ -1,5 +1,5 @@
 import express from "express";
-import validateAuthPayload from "../middleware/validateSignupPayload.js";
+import validatePayload from "../middleware/validatePayload.js";
 import getHashedPassword from "../middleware/hashPassword.js";
 import Users from "../models/Users.js";
 import validateLoginCredential from "../middleware/loginValidation.js";
@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import authenticateToken from "../middleware/authenticateToken.js";
 const userRouter = express.Router();
 
-userRouter.post("/auth/signup", validateAuthPayload, async (req, res) => {
+userRouter.post("/auth/signup", validatePayload, async (req, res) => {
    try {
       const hash = await getHashedPassword(req.body.password);
       const user = await Users.create({ ...req.body, password: hash });
@@ -21,7 +21,7 @@ userRouter.post("/auth/signup", validateAuthPayload, async (req, res) => {
    }
 });
 
-userRouter.post("/auth/login", validateAuthPayload, async (req, res) => {
+userRouter.post("/auth/login", validatePayload, async (req, res) => {
    try {
       const JWT_SECRET = process.env.JWT_SECRET;
       const { email, password } = req.body;
