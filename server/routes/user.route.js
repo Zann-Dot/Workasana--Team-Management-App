@@ -4,6 +4,7 @@ import getHashedPassword from "../middleware/hashPassword.js";
 import Users from "../models/Users.js";
 import validateLoginCredential from "../middleware/loginValidation.js";
 import jwt from "jsonwebtoken";
+import authenticateToken from "../middleware/authenticateToken.js";
 const userRouter = express.Router();
 
 userRouter.post("/auth/signup", validateAuthPayload, async (req, res) => {
@@ -50,5 +51,14 @@ userRouter.post("/auth/login", validateAuthPayload, async (req, res) => {
       res.status(500).json({ error: error.message });
    }
 });
+
+userRouter.get("/auth/user", authenticateToken, async (req, res) => {
+   try {
+      const user = await Users.findById(req.user.userId)
+      res.json(user)
+   } catch (error) {
+      res.status(500).json({ error: error.message })
+   }
+})
 
 export default userRouter;

@@ -8,7 +8,7 @@ async function authenticateToken(req, res, next) {
             .json({ error: "Access Denied. Please log in." });
     try {
         const verifiedToken = jwt.verify(token, JWT_SECRET);
-        req.user = verifiedToken.payload;
+        req.user = verifiedToken;
         next();
     } catch (error) {
         res.status(403).json({ error: "Unauthorized: Token missing or expired!" });
