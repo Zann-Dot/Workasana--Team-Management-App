@@ -10,7 +10,7 @@ async function validatePayload(req, res, next) {
          if (!value || value.length === 0)
             return res
                .status(400)
-               .json({ error: `${key} is required for authentication` });
+               .json({ error: `${key} ${Array.isArray(value) ? "are" : "is"} required.` });
 
          if (key === "email" && !emailRegex.test(value))
             return res
