@@ -4,18 +4,18 @@ const taskSchema = new Schema(
     {
         name: { type: String, required: true },
         project: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: "Project",
             required: true,
         },
         team: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: "Team",
             required: true,
         },
         owners: [
             {
-                type: mongoose.Schema.Types.ObjectId,
+                type: Schema.Types.ObjectId,
                 ref: "User",
                 required: true,
             },
