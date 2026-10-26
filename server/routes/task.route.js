@@ -3,6 +3,7 @@ import Tasks from "../models/Task.js";
 import validatePayload from "../middleware/validatePayload.js";
 import authenticateToken from "../middleware/authenticateToken.js";
 import validateReferences from "../middleware/validateReferences.js";
+import filterQuery from "../middleware/filterQuery.js";
 const taskRouter = express.Router();
 
 taskRouter.post(
@@ -45,5 +46,37 @@ taskRouter.post(
       }
    },
 );
+
+taskRouter.get("/tasks", filterQuery, async (req, res) => {
+   try {
+      const query = req.filterQueries;
+      const { timeToComplete } = req.query;
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const sort = { createdAt: -1 };
+      if (timeToComplete) sort = { timeToComplete };
+      console.log(query);
+
+
+      const [totalTasks, tasks] = await Promise.all([
+         Tasks.countDocuments(),
+         Tasks.find(query)
+            .sort(sort)
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .lean()
+      ]);
+
+      if (!tasks) return res.status(404).json({ error: "No tasks found." });
+      res.json({
+         totalTasks,
+         tasks,
+         totalPages: Math.ceil(totalTasks / limit),
+         currentPage: page,
+      });
+   } catch (error) {
+      res.status(500).json({ error: error.message });
+   }
+});
 
 export default taskRouter;

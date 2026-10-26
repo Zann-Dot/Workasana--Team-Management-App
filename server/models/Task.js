@@ -24,7 +24,7 @@ const taskSchema = new Schema(
         timeToComplete: { type: Number, required: true },
         status: {
             type: String,
-            enum: ["todo", "inProgress", "completed", "blocked"],
+            enum: ["todo", "inprogress", "completed", "blocked"],
             default: "todo",
         },
     },
