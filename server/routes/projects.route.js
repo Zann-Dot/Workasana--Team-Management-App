@@ -2,8 +2,8 @@ import express from "express";
 import validatePayload from "../middleware/validatePayload.js";
 import Projects from "../models/Projects.js";
 
-const teamRouter = express.Router();
-teamRouter.post("/projects", validatePayload, async (req, res) => {
+const projectRouter = express.Router();
+projectRouter.post("/projects", validatePayload, async (req, res) => {
     try {
         const { projectId } = req.query;
         if (projectId) {
@@ -42,7 +42,7 @@ teamRouter.post("/projects", validatePayload, async (req, res) => {
     }
 });
 
-teamRouter.get("/projects", async (req, res) => {
+projectRouter.get("/projects", async (req, res) => {
     try {
         const projects = await Projects.find({}).lean();
         if (!projects) return res.status(404).json({ error: "No projects found" });
@@ -51,4 +51,4 @@ teamRouter.get("/projects", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-export default teamRouter;
+export default projectRouter;
