@@ -79,4 +79,28 @@ taskRouter.get("/tasks", filterQuery, async (req, res) => {
    }
 });
 
+taskRouter.delete("/tasks", async (req, res) => {
+   try {
+      const { taskId } = req.body;
+
+      if (!Array.isArray(taskId) || taskId.length === 0)
+         return res.status(400).json({ error: "Provide atleast 1 task ID" });
+
+      const objectIds = taskId.map((id) => new Types.ObjectId(id));
+      const deletedTasks = await Tasks.deleteMany({ _id: { $in: objectIds } });
+
+      if (deletedTasks.deletedCount === 0)
+         return res.status(404).json({ error: "No task deleted" });
+
+      const message = `${deletedTasks.deletedCount} ${deletedTasks.deletedCount === 1 ? "task" : "tasks"} deleted successfully.`
+      res.json({
+         success: true,
+         message,
+         deletedTasks,
+      });
+   } catch (error) {
+      res.status(500).json({ error: error.message });
+   }
+})
+
 export default taskRouter;
