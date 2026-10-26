@@ -2,7 +2,7 @@ import express from "express";
 import validatePayload from "../middleware/validatePayload.js";
 import Teams from "../models/Teams.js";
 const teamRouter = express.Router();
-teamRouter.post("/team", validatePayload, async (req, res) => {
+teamRouter.post("/teams", validatePayload, async (req, res) => {
    try {
       const { teamId } = req.query;
       if (teamId) {
@@ -38,4 +38,16 @@ teamRouter.post("/team", validatePayload, async (req, res) => {
       res.status(500).json({ error: error.message })
    }
 });
+
+teamRouter.get("/teams", async (req, res) => {
+   try {
+      const teams = await Teams.find({}).lean()
+      if (!teams)
+         return res.status(404).json({ error: "No Lead found" });
+      res.json(teams)
+   } catch (error) {
+      res.status(500).json({ error: error.message })
+
+   }
+})
 export default teamRouter;
