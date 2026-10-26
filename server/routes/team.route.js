@@ -43,7 +43,7 @@ teamRouter.get("/teams", async (req, res) => {
    try {
       const teams = await Teams.find({}).lean()
       if (!teams)
-         return res.status(404).json({ error: "No Lead found" });
+         return res.status(404).json({ error: "No teams found" });
       res.json(teams)
    } catch (error) {
       res.status(500).json({ error: error.message })
