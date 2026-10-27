@@ -1,17 +1,4 @@
-import {
-   ArrowRightIcon,
-   CheckCircleIcon,
-   EnvelopeSimpleIcon,
-   GithubLogoIcon,
-   LinkedinLogoIcon,
-   MoonIcon,
-   SunIcon,
-   type Icon,
-} from "@phosphor-icons/react"
-import { useEffect, useState } from "react"
-
-import { useTheme } from "@/components/theme-provider"
-
+import { ArrowRightIcon, type Icon } from "@phosphor-icons/react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,7 +7,11 @@ import {
    CardHeader,
    CardTitle,
 } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import Header from "@/components/Header"
+import Footer from "@/components/Footer"
+
+import { steps } from "@/utilis/steps"
+import { features } from "@/utilis/features"
 
 export type Item = {
    icon: Icon
@@ -29,65 +20,10 @@ export type Item = {
 }
 
 export default function LandingPage() {
-   const { theme, setTheme } = useTheme()
-   const [systemTheme, setSystemTheme] = useState<"dark" | "light">(() =>
-      typeof window !== "undefined" &&
-         window.matchMedia("(prefers-color-scheme: dark)").matches
-         ? "dark"
-         : "light"
-   )
-
-   useEffect(() => {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-      const handler = (e: MediaQueryListEvent) => {
-         setSystemTheme(e.matches ? "dark" : "light")
-      }
-      mediaQuery.addEventListener("change", handler)
-      return () => mediaQuery.removeEventListener("change", handler)
-   }, [])
-
-   const isDark =
-      theme === "dark" || (theme === "system" && systemTheme === "dark")
-
-   const toggleTheme = () => {
-      setTheme(isDark ? "light" : "dark")
-   }
-
    return (
       <div className="min-h-screen bg-background text-foreground">
-         {/* Header */}
-         <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
-            <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-               <div className="flex items-center gap-2">
-                  <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                     <CheckCircleIcon weight="bold" className="size-5" />
-                  </div>
-                  <span className="text-xl font-bold tracking-tight">Workasana</span>
-               </div>
-               <div className="flex items-center gap-2">
-                  <Button
-                     variant="ghost"
-                     size="icon"
-                     onClick={toggleTheme}
-                     aria-label={
-                        isDark ? "Switch to light mode" : "Switch to dark mode"
-                     }
-                     title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-                  >
-                     {isDark ? (
-                        <SunIcon weight="bold" className="size-5 text-amber-400" />
-                     ) : (
-                        <MoonIcon weight="bold" className="size-5" />
-                     )}
-                  </Button>
-                  <Button variant="ghost">Login</Button>
-                  <Button>Sign Up</Button>
-               </div>
-            </div>
-         </header>
-
+         <Header />
          <main>
-            {/* Hero */}
             <section className="relative overflow-hidden">
                <div className="absolute inset-0 -z-10 bg-linear-to-b from-muted/60 to-background" />
                <div className="mx-auto flex max-w-4xl flex-col items-center px-4 py-24 text-center sm:px-6 sm:py-32">
@@ -108,14 +44,15 @@ export default function LandingPage() {
                         Get Started
                         <ArrowRightIcon weight="bold" />
                      </Button>
-                     <Button size="lg" variant="outline">
-                        Explore Features
-                     </Button>
+                     <a href="#features">
+                        <Button size="lg" variant="outline" >
+                           Explore Features
+                        </Button>
+                     </a>
                   </div>
                </div>
             </section>
 
-            {/* How it works */}
             <section className="border-y bg-muted/30">
                <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
                   <div className="mx-auto max-w-2xl text-center">
@@ -145,7 +82,6 @@ export default function LandingPage() {
                </div>
             </section>
 
-            {/* Features */}
             <section id="features">
                <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
                   <div className="mx-auto max-w-2xl text-center">
@@ -157,7 +93,7 @@ export default function LandingPage() {
                         productive.
                      </p>
                   </div>
-                  <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <div id="features" className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                      {features.map((feature) => (
                         <Card
                            key={feature.title}
@@ -177,34 +113,7 @@ export default function LandingPage() {
             </section>
          </main>
 
-         {/* Footer */}
-         <footer className="border-t">
-            <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-               <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-                  <div className="flex items-center gap-2">
-                     <div className="flex size-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                        <CheckCircleIcon weight="bold" className="size-4" />
-                     </div>
-                     <span className="font-semibold">Workasana</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                     <Button variant="ghost" size="icon" aria-label="GitHub">
-                        <GithubLogoIcon className="size-5" />
-                     </Button>
-                     <Button variant="ghost" size="icon" aria-label="LinkedIn">
-                        <LinkedinLogoIcon className="size-5" />
-                     </Button>
-                     <Button variant="ghost" size="icon" aria-label="Email">
-                        <EnvelopeSimpleIcon className="size-5" />
-                     </Button>
-                  </div>
-               </div>
-               <Separator className="my-6" />
-               <p className="text-center text-sm text-muted-foreground">
-                  © 2026 — built by Anay Karn. All rights reserved.
-               </p>
-            </div>
-         </footer>
+         <Footer />
       </div>
    )
 }
