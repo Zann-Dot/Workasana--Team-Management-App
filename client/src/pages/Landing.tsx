@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card"
 import { steps } from "@/utilis/steps"
 import { features } from "@/utilis/features"
+import { Link } from "react-router"
 
 export type Item = {
    icon: Icon
@@ -35,10 +36,12 @@ export default function LandingPage() {
                   come.
                </p>
                <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-                  <Button size="lg">
-                     Get Started
-                     <ArrowRightIcon weight="bold" />
-                  </Button>
+                  <Link to="/signup">
+                     <Button size="lg">
+                        Get Started
+                        <ArrowRightIcon weight="bold" />
+                     </Button>
+                  </Link>
                   <a href="#features">
                      <Button size="lg" variant="outline" >
                         Explore Features
