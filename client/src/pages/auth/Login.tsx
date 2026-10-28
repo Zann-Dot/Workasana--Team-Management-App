@@ -1,0 +1,151 @@
+import { useState } from "react"
+import {
+   ArrowRightIcon,
+   CheckCircleIcon,
+   EnvelopeSimpleIcon,
+   EyeIcon,
+   EyeSlashIcon,
+   LockKeyIcon,
+   SparkleIcon,
+} from "@phosphor-icons/react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+   Card,
+   CardContent,
+   CardFooter,
+} from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Link } from "react-router"
+
+export default function LoginPage() {
+   const [showPassword, setShowPassword] = useState(false)
+
+   return (
+      <main className="relative flex mb-20 items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+         <div className="absolute inset-0 -z-10 bg-linear-to-b from-muted/60 to-background" />
+         <div className="w-full max-w-md">
+            <div className="mb-6 flex flex-col items-center text-center">
+               <Badge variant="secondary" className="mb-3 gap-1.5 px-3 py-1 text-xs">
+                  <SparkleIcon weight="fill" className="size-3.5 text-primary" />
+                  <span>Welcome to Workasana</span>
+               </Badge>
+
+               <div className="mb-3 flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-xs">
+                  <CheckCircleIcon weight="duotone" className="size-7" />
+               </div>
+
+               <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  Welcome <span className="text-primary">back</span>
+               </h1>
+               <p className="mt-1 text-sm text-muted-foreground">
+                  Where teams turn plans into finished work
+               </p>
+            </div>
+
+            <Card className="border-border/80 shadow-md">
+
+               <CardContent className="space-y-4">
+                  <div className="space-y-4">
+
+                     <div className="space-y-2">
+                        <Label htmlFor="email">Email address</Label>
+                        <div className="relative">
+                           <EnvelopeSimpleIcon
+                              weight="duotone"
+                              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                           />
+                           <Input
+                              id="email"
+                              type="email"
+                              placeholder="name@company.com"
+                              className="pl-9"
+                              readOnly
+                           />
+                        </div>
+                     </div>
+
+                     <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                           <Label htmlFor="password">Password</Label>
+                           <a
+                              href="#forgot-password"
+                              className="text-xs font-medium text-primary hover:underline"
+                           >
+                              Forgot password?
+                           </a>
+                        </div>
+                        <div className="relative">
+                           <LockKeyIcon
+                              weight="duotone"
+                              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                           />
+                           <Input
+                              id="password"
+                              type={showPassword ? "text" : "password"}
+                              placeholder="••••••••"
+                              className="pl-9 pr-9"
+                              readOnly
+                           />
+                           <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground focus:outline-none"
+                              aria-label={showPassword ? "Hide password" : "Show password"}
+                           >
+                              {showPassword ? (
+                                 <EyeSlashIcon weight="duotone" className="size-4" />
+                              ) : (
+                                 <EyeIcon weight="duotone" className="size-4" />
+                              )}
+                           </button>
+                        </div>
+                     </div>
+
+                     <div className="flex items-center gap-2">
+                        <Checkbox id="remember-me" />
+                        <Label
+                           htmlFor="remember-me"
+                           className="text-sm font-normal text-muted-foreground cursor-pointer"
+                        >
+                           Remember me on this device
+                        </Label>
+                     </div>
+
+                     <Button size="lg" type="button" className="w-full gap-2 font-semibold">
+                        <span>Sign In</span>
+                        <ArrowRightIcon weight="bold" className="size-4" />
+                     </Button>
+                  </div>
+               </CardContent>
+
+               <CardFooter className="flex flex-col gap-3 border-t pt-6 text-center">
+                  <p className="text-sm text-muted-foreground">
+                     Don&apos;t have an account?{" "}
+                     <Link
+                        to="/signup"
+                        className="font-semibold text-primary transition-colors hover:underline"
+                     >
+                        Create an account
+                     </Link>
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                     By signing in, you agree to our{" "}
+                     <a href="#terms" className="underline underline-offset-4 hover:text-primary">
+                        Terms of Service
+                     </a>{" "}
+                     and{" "}
+                     <a href="#privacy" className="underline underline-offset-4 hover:text-primary">
+                        Privacy Policy
+                     </a>
+                     .
+                  </p>
+               </CardFooter>
+            </Card>
+         </div>
+      </main>
+   )
+}
+
