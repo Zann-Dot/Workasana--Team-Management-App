@@ -11,4 +11,13 @@ export default defineConfig({
       "@": resolve(import.meta.dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: "https://workasana-api.onrender.com",
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 })
