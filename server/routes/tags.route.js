@@ -1,5 +1,5 @@
 import express from "express";
-import Tags from "../models/Tags";
+import Tags from "../models/Tags.js";
 const tagsRouter = express.Router();
 tagsRouter.post("/tags", async (req, res) => {
     try {
