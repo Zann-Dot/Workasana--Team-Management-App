@@ -19,9 +19,17 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Link } from "react-router"
+import { useLoginAuth } from "@/hooks/useUser"
 
 export default function LoginPage() {
-   const [showPassword, setShowPassword] = useState(false)
+   const [showPassword, setShowPassword] = useState(false);
+   const { mutate: login } = useLoginAuth()
+
+   function handleSubmit(formData: FormData) {
+      const email = formData.get("email") as string
+      const password = formData.get("password") as string
+      login({ email, password });
+   }
 
    return (
       <main className="relative flex mb-20 items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
@@ -48,8 +56,7 @@ export default function LoginPage() {
             <Card className="border-border/80 shadow-md">
 
                <CardContent className="space-y-4">
-                  <div className="space-y-4">
-
+                  <form className="space-y-4" action={handleSubmit}>
                      <div className="space-y-2">
                         <Label htmlFor="email">Email address</Label>
                         <div className="relative">
@@ -60,9 +67,9 @@ export default function LoginPage() {
                            <Input
                               id="email"
                               type="email"
+                              name="email"
                               placeholder="name@company.com"
                               className="pl-9"
-                              readOnly
                            />
                         </div>
                      </div>
@@ -84,10 +91,10 @@ export default function LoginPage() {
                            />
                            <Input
                               id="password"
+                              name="password"
                               type={showPassword ? "text" : "password"}
                               placeholder="••••••••"
                               className="pl-9 pr-9"
-                              readOnly
                            />
                            <button
                               type="button"
@@ -114,11 +121,11 @@ export default function LoginPage() {
                         </Label>
                      </div>
 
-                     <Button size="lg" type="button" className="w-full gap-2 font-semibold">
+                     <Button size="lg" type="submit" className="w-full gap-2 font-semibold">
                         <span>Sign In</span>
                         <ArrowRightIcon weight="bold" className="size-4" />
                      </Button>
-                  </div>
+                  </form>
                </CardContent>
 
                <CardFooter className="flex flex-col gap-3 border-t pt-6 text-center">
