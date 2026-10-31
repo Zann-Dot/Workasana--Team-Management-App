@@ -9,11 +9,15 @@ const userRouter = express.Router();
 
 userRouter.post("/auth/signup", validatePayload, async (req, res) => {
    try {
+      const { email } = req.body;
+      const isUserExist = await Users.findOne({ email });
+      if (isUserExist)
+         return res.status(400).json({ error: "Email already in-use" });
       const hash = await getHashedPassword(req.body.password);
       const user = await Users.create({ ...req.body, password: hash });
       res.json({
          success: true,
-         message: "user registered successfully",
+         message: "User registered successfully",
          user,
       });
    } catch (error) {
@@ -26,6 +30,8 @@ userRouter.post("/auth/login", validatePayload, async (req, res) => {
       const JWT_SECRET = process.env.JWT_SECRET;
       const { email, password } = req.body;
       const user = await Users.findOne({ email });
+      if (user)
+         return res.status(404).json({ error: "Cannot find account associated with this email." });
       const getAuth = await validateLoginCredential(password, user.password);
       if (!getAuth.auth)
          return res.status(401).json({ error: getAuth.message });
