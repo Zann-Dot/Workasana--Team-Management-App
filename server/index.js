@@ -7,6 +7,7 @@ import taskRouter from "./routes/task.route.js";
 import teamRouter from "./routes/team.route.js";
 import projectRouter from "./routes/projects.route.js";
 import tagsRouter from "./routes/tags.route.js";
+connectDB();
 const app = e();
 const corsConfig = {
     origin: "*",
@@ -15,14 +16,6 @@ const corsConfig = {
 app.use(e.json());
 app.use(cors(corsConfig));
 app.use(cookieParser());
-app.use(async (req, res, next) => {
-    try {
-        await connectDB();
-        next();
-    } catch (error) {
-        res.status(500).json({ error: "database connection failed" })
-    }
-})
 const PORT = 3000;
 app.get("/", (req, res) => {
     res.json({ message: "workasana server, search endpoints for data view" });
