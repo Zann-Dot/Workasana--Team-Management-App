@@ -30,7 +30,7 @@ interface ErrorMessage {
    password?: string
 }
 export default function LoginPage() {
-   const navigate = useNavigate();
+   const navigate = useNavigate()
    const [showPassword, setShowPassword] = useState(false)
    const [open, setOpen] = useState(false)
    const [errorMessage, setErrorMessage] = useState<ErrorMessage>({
@@ -48,8 +48,8 @@ export default function LoginPage() {
 
       if (isSuccess) {
          setTimeout(() => {
-            navigate("/")
-         }, 3000)
+            navigate("/dashboard")
+         }, 1500)
       }
    }, [isPending, isSuccess])
 
@@ -91,8 +91,11 @@ export default function LoginPage() {
             },
             onError: (err) => {
                setOpen(false)
-               if (err.message.includes("Invalid password"))
-                  setErrorMessage((prev) => ({ ...prev, password: err.message }));
+               if (err.message.includes("Invalid email or password"))
+                  setErrorMessage((prev) => ({ ...prev, password: err.message }))
+
+               if (err.message.includes("Cannot find account"))
+                  setErrorMessage((prev) => ({ ...prev, password: err.message }))
             },
          }
       )

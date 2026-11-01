@@ -48,11 +48,18 @@ export default function AlertDialog({
                   )}
 
                   {alert.type === "loading" && (
-                     <div className="inline-flex py-10" role="status" aria-label="loading">
-                        <span className="flex h-6 items-center justify-center gap-1" aria-hidden="true">
-                           <span className="h-4.5 w-1.5 rounded-xs bg-primary/45 origin-bottom animate-[spinner-bars_1s_ease-in-out_infinite_0s]"></span>
-                           <span className="h-4.5 w-1.5 rounded-xs bg-primary/65 origin-bottom animate-[spinner-bars_1s_ease-in-out_infinite_0.12s]"></span>
-                           <span className="h-4.5 w-1.5 rounded-xs bg-primary/75 origin-bottom animate-[spinner-bars_1s_ease-in-out_infinite_0.24s]"></span>
+                     <div
+                        className="inline-flex py-10"
+                        role="status"
+                        aria-label="loading"
+                     >
+                        <span
+                           className="flex h-6 items-center justify-center gap-1"
+                           aria-hidden="true"
+                        >
+                           <span className="h-4.5 w-1.5 origin-bottom animate-[spinner-bars_1s_ease-in-out_infinite_0s] rounded-xs bg-primary/45"></span>
+                           <span className="h-4.5 w-1.5 origin-bottom animate-[spinner-bars_1s_ease-in-out_infinite_0.12s] rounded-xs bg-primary/65"></span>
+                           <span className="h-4.5 w-1.5 origin-bottom animate-[spinner-bars_1s_ease-in-out_infinite_0.24s] rounded-xs bg-primary/75"></span>
                         </span>
                         <span className="sr-only">Loading...</span>
                      </div>
