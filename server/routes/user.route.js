@@ -26,24 +26,16 @@ userRouter.post("/auth/signup", validatePayload, async (req, res) => {
 });
 
 userRouter.post("/auth/login", validatePayload, async (req, res) => {
-   console.log("[LOGIN] Route hit at:", Date.now());
    try {
       const JWT_SECRET = process.env.JWT_SECRET;
       const { email, password } = req.body;
-
-      console.log("[LOGIN] Starting User.findOne...");
       const user = await Users.findOne({ email }).maxTimeMS(5000);
-      console.log("[LOGIN] User.findOne finished at:", Date.now());
-
       if (!user)
-         return res.status(404).json({ error: "Cannot find account associated with this email." });
-
-      console.log("[LOGIN] Starting validateLoginCredential...");
+         return res
+            .status(404)
+            .json({ error: "Cannot find account associated with this email." });
       const getAuth = await validateLoginCredential(password, user.password);
-      console.log("[LOGIN] validateLoginCredential finished at:", Date.now());
-
-      if (!getAuth.auth)
-         return res.status(401).json({ error: getAuth.message });
+      if (!getAuth.auth) return res.status(401).json({ error: getAuth.message });
 
       const token = jwt.sign(
          { userId: user._id, email: user.email },
@@ -63,18 +55,17 @@ userRouter.post("/auth/login", validatePayload, async (req, res) => {
          message: "Logged in successfully!",
       });
    } catch (error) {
-      console.log("[LOGIN] Route hit at:", Date.now());
       res.status(500).json({ error: error.message });
    }
 });
 
 userRouter.get("/auth/user", authenticateToken, async (req, res) => {
    try {
-      const user = await Users.findById(req.user.userId)
-      res.json(user)
+      const user = await Users.findById(req.user.userId);
+      res.json(user);
    } catch (error) {
-      res.status(500).json({ error: error.message })
+      res.status(500).json({ error: error.message });
    }
-})
+});
 
 export default userRouter;
