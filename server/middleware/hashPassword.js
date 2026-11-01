@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs'
 async function getHashedPassword(passwordText) {
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(passwordText, saltRounds);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(passwordText, salt);
     return hashedPassword
 }
 
