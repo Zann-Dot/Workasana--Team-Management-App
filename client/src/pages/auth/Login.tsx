@@ -91,8 +91,8 @@ export default function LoginPage() {
             },
             onError: (err) => {
                setOpen(false)
-               if (err.message.includes("Invalid Credentials"))
-                  setErrorMessage((prev) => ({ ...prev, password: err.message }))
+               if (err.message.includes("Invalid password"))
+                  setErrorMessage((prev) => ({ ...prev, password: err.message }));
             },
          }
       )
