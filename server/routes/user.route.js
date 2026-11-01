@@ -31,16 +31,16 @@ userRouter.post("/auth/login", validatePayload, async (req, res) => {
       const JWT_SECRET = process.env.JWT_SECRET;
       const { email, password } = req.body;
 
-      console.log("[LOGIN] Route hit at:", Date.now());
+      console.log("[LOGIN] Starting User.findOne...");
       const user = await Users.findOne({ email }).maxTimeMS(5000);
-      console.log("[LOGIN] Route hit at:", Date.now());
+      console.log("[LOGIN] User.findOne finished at:", Date.now());
 
       if (!user)
          return res.status(404).json({ error: "Cannot find account associated with this email." });
 
-      console.log("[LOGIN] Route hit at:", Date.now());
+      console.log("[LOGIN] Starting validateLoginCredential...");
       const getAuth = await validateLoginCredential(password, user.password);
-      console.log("[LOGIN] Route hit at:", Date.now());
+      console.log("[LOGIN] validateLoginCredential finished at:", Date.now());
 
       if (!getAuth.auth)
          return res.status(401).json({ error: getAuth.message });
