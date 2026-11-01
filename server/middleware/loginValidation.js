@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs"
+import bcrypt from "bcrypt"
 async function validateLoginCredential(passwordText, hash) {
     const check = await bcrypt.compare(passwordText, hash);
     if (check) return { auth: true, message: "Password Validated" };
