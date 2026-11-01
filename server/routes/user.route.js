@@ -30,7 +30,7 @@ userRouter.post("/auth/login", validatePayload, async (req, res) => {
       const JWT_SECRET = process.env.JWT_SECRET;
       const { email, password } = req.body;
       const user = await Users.findOne({ email });
-      if (user)
+      if (!user)
          return res.status(404).json({ error: "Cannot find account associated with this email." });
       const getAuth = await validateLoginCredential(password, user.password);
       if (!getAuth.auth)
