@@ -50,6 +50,13 @@ userRouter.post("/auth/login", validatePayload, async (req, res) => {
          sameSite: "strict",
       });
 
+      res.cookie("isLoggedIn", "true", {
+         maxAge: 168 * 3600000,
+         secure: true,
+         httpOnly: false,
+         sameSite: "strict",
+      });
+
       res.json({
          success: true,
          message: "Logged in successfully!",
