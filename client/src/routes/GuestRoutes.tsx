@@ -3,8 +3,9 @@ import { CheckAuthToken } from "@/utilis/CheckAuthToken";
 
 export default function GuestRoutes() {
     const isAuthenticated = CheckAuthToken();
+    console.log(isAuthenticated)
     if (!isAuthenticated)
-        return <Navigate to="/" replace />
+        return <Outlet />
 
-    return <Outlet />
+    return <Navigate to="/dashboard" replace />
 }
