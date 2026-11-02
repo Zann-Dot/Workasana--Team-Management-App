@@ -95,7 +95,7 @@ export default function LoginPage() {
                   setErrorMessage((prev) => ({ ...prev, password: err.message }))
 
                if (err.message.includes("Cannot find account"))
-                  setErrorMessage((prev) => ({ ...prev, password: err.message }))
+                  setErrorMessage((prev) => ({ ...prev, email: err.message }))
             },
          }
       )
