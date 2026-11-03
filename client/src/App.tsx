@@ -6,6 +6,7 @@ import SignupPage from "./pages/auth/Signup"
 import Dashboard from "./pages/Dashboard"
 import GuestRoutes from "./routes/GuestRoutes"
 import ProtectedRoutes from "./routes/ProtectedRoutes"
+import ForgetPassword from "./pages/auth/ForgetPassword"
 
 export function App() {
   return (
@@ -14,6 +15,7 @@ export function App() {
         <Route element={<GuestRoutes />}>
           <Route index element={<LandingPage />} />
           <Route path="login" element={<LoginPage />} />
+          <Route path="login/forget-password" element={<ForgetPassword />} />
           <Route path="signup" element={<SignupPage />} />
         </Route>
 

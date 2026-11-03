@@ -8,8 +8,8 @@ import {
    CardTitle,
    CardDescription,
 } from "@/components/ui/card"
-import ProjectSection from "@/components/DashboardPage/ProjectSection"
-import TaskSection from "@/components/DashboardPage/TaskSection"
+import ProjectSection from "@/components/dashboard/ProjectSection"
+import TaskSection from "@/components/dashboard/TaskSection"
 import STATS from "@/utilis/dashboardStats"
 
 function PriorityDot({ priority }: { priority: string }) {

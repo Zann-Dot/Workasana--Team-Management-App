@@ -105,7 +105,7 @@ export default function LoginPage() {
    const isPasswordInvalid = Boolean(errorMessage.password)
 
    return (
-      <main className="relative mb-20 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <main className="relative mb-10 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
          <AlertDialog open={open} setOpen={setOpen} alert={alert} />
          <div className="absolute inset-0 -z-10 bg-linear-to-b from-muted/60 to-background" />
          <div className="w-full max-w-md">
@@ -150,7 +150,7 @@ export default function LoginPage() {
                      </Field>
 
                      <Field data-invalid={isPasswordInvalid}>
-                        <div className="flex items-center justify-between">
+                        <Link to="/login/forget-password" className="flex items-center justify-between">
                            <Label htmlFor="password">Password</Label>
                            <a
                               href="#forgot-password"
@@ -158,7 +158,7 @@ export default function LoginPage() {
                            >
                               Forgot password?
                            </a>
-                        </div>
+                        </Link>
                         <div className="relative">
                            <LockKeyIcon
                               weight="duotone"
