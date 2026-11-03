@@ -75,4 +75,34 @@ userRouter.get("/auth/user", authenticateToken, async (req, res) => {
    }
 });
 
+userRouter.put("/auth/reset-password", validatePayload, async (req, res) => {
+   try {
+      const { email, password } = req.body;
+      const user = await Users.findOne({ email }).lean().maxTimeMS(5000);
+      if (!user)
+         return res
+            .status(404)
+            .json({ error: "Cannot find account associated with this email." });
+
+      const hash = await getHashedPassword(password);
+      if (!hash)
+         return res
+            .status(500)
+            .json({ error: "Internal server error while processing password." });
+
+      const result = await Users.updateOne(
+         { email },
+         { $set: { password: hash } },
+         { runValidators: true },
+      );
+      res.json({
+         success: true,
+         message: "password updated successfully",
+         modifiedCount: result.modifiedCount,
+      });
+   } catch (error) {
+      res.status(500).json({ error: error.message });
+   }
+});
+
 export default userRouter;
