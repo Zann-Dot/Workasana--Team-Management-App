@@ -7,8 +7,8 @@ import {
    CardHeader,
    CardTitle,
 } from "@/components/ui/card"
-import { steps } from "@/utilis/steps"
-import { features } from "@/utilis/features"
+import { steps } from "@/utilis/getSteps"
+import { features } from "@/utilis/getFeatures"
 import { Link } from "react-router"
 
 export type Item = {

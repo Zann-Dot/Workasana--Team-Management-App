@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card"
 import ProjectSection from "@/components/dashboard/ProjectSection"
 import TaskSection from "@/components/dashboard/TaskSection"
-import STATS from "@/utilis/dashboardStats"
+import STATS from "@/utilis/getDashboardStats"
 
 function PriorityDot({ priority }: { priority: string }) {
    const colors: Record<string, string> = {
