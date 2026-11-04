@@ -34,7 +34,7 @@ userRouter.post(
       try {
          const JWT_SECRET = process.env.JWT_SECRET;
          const { password } = req.body;
-         const user = req.user
+         const user = req.user;
          const getAuth = await validateLoginCredential(password, user.password);
          if (!getAuth.auth)
             return res.status(401).json({ error: getAuth.message });
@@ -49,14 +49,14 @@ userRouter.post(
             maxAge: 168 * 3600000,
             secure: true,
             httpOnly: true,
-            sameSite: "strict",
+            sameSite: "none",
          });
 
          res.cookie("isLoggedIn", "true", {
             maxAge: 168 * 3600000,
             secure: true,
             httpOnly: false,
-            sameSite: "strict",
+            sameSite: "none",
          });
 
          res.json({

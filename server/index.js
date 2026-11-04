@@ -1,3 +1,4 @@
+import "dotenv/config";
 import e from "express";
 import cors from "cors";
 import connectDB from "./db/db.connect.js";
@@ -7,27 +8,48 @@ import taskRouter from "./routes/task.route.js";
 import teamRouter from "./routes/team.route.js";
 import projectRouter from "./routes/projects.route.js";
 import tagsRouter from "./routes/tags.route.js";
+
 const app = e();
+
+const allowedOrigins = [
+    "https://workasana-app-one.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+];
+
 const corsConfig = {
-    origin: "https://workasana-app-one.vercel.app/",
-    method: ["GET", "POST", "PUT", "DELETE"],
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        const cleanOrigin = origin.replace(/\/$/, "");
+        if (
+            allowedOrigins.includes(cleanOrigin) ||
+            cleanOrigin.endsWith(".vercel.app")
+        ) {
+            return callback(null, true);
+        }
+        return callback(new Error("CORS policy violation: origin not allowed"), false);
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
-    optionSuccessStatus: 200
+    optionsSuccessStatus: 200,
 };
+
+app.use(cors(corsConfig)); ṁ
 app.use(e.json());
-app.use(cors(corsConfig));
 app.use(cookieParser());
+
 app.use(async (req, res, next) => {
     try {
         await connectDB();
         next();
     } catch (error) {
-        res.status(500).json({ error: "database connection failed" })
+        res.status(500).json({ error: "database connection failed" });
     }
-})
-const PORT = 3000;
+});
+
+const PORT = process.env.PORT || 3000;
 app.get("/", (req, res) => {
-    res.json({ message: "workasana server, search endpoints for data view" });
+    res.json({ message: "Welcome to Workasana Server!" });
 });
 
 app.use("/api", userRouter);
