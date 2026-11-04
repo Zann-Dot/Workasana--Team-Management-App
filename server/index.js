@@ -9,7 +9,7 @@ import projectRouter from "./routes/projects.route.js";
 import tagsRouter from "./routes/tags.route.js";
 const app = e();
 const corsConfig = {
-    origin: "*",
+    origin: "https://workasana-app-one.vercel.app/",
     credentials: true,
 };
 app.use(e.json());
