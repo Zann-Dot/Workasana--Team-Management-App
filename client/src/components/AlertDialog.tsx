@@ -65,13 +65,11 @@ export default function AlertDialog({
                      </div>
                   )}
                </DialogTitle>
-               <DialogDescription className="flex items-center justify-center">
-                  {alert.type === "success" && (
-                     <div className="flex items-center gap-1 text-base">
-                        {alert.message}
-                     </div>
-                  )}
-               </DialogDescription>
+               {alert.type === "success" && (
+                  <DialogDescription className="flex items-center justify-center">
+                     {alert.message}
+                  </DialogDescription>
+               )}
             </DialogHeader>
          </DialogContent>
       </Dialog>
