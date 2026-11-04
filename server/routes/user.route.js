@@ -5,6 +5,7 @@ import Users from "../models/Users.js";
 import validateLoginCredential from "../middleware/loginValidation.js";
 import jwt from "jsonwebtoken";
 import authenticateToken from "../middleware/authenticateToken.js";
+import validateUserByEmail from "../middleware/validateUserByEmail.js";
 const userRouter = express.Router();
 
 userRouter.post("/auth/signup", validatePayload, async (req, res) => {
@@ -25,46 +26,48 @@ userRouter.post("/auth/signup", validatePayload, async (req, res) => {
    }
 });
 
-userRouter.post("/auth/login", validatePayload, async (req, res) => {
-   try {
-      const JWT_SECRET = process.env.JWT_SECRET;
-      const { email, password } = req.body;
-      const user = await Users.findOne({ email }).maxTimeMS(5000);
-      if (!user)
-         return res
-            .status(404)
-            .json({ error: "Cannot find account associated with this email." });
-      const getAuth = await validateLoginCredential(password, user.password);
-      if (!getAuth.auth) return res.status(401).json({ error: getAuth.message });
+userRouter.post(
+   "/auth/login",
+   validatePayload,
+   validateUserByEmail,
+   async (req, res) => {
+      try {
+         const JWT_SECRET = process.env.JWT_SECRET;
+         const { password } = req.body;
+         const user = req.user
+         const getAuth = await validateLoginCredential(password, user.password);
+         if (!getAuth.auth)
+            return res.status(401).json({ error: getAuth.message });
 
-      const token = jwt.sign(
-         { userId: user._id, email: user.email },
-         JWT_SECRET,
-         { expiresIn: "168h" },
-      );
+         const token = jwt.sign(
+            { userId: user._id, email: user.email },
+            JWT_SECRET,
+            { expiresIn: "168h" },
+         );
 
-      res.cookie("sessionToken", token, {
-         maxAge: 168 * 3600000,
-         secure: true,
-         httpOnly: true,
-         sameSite: "strict",
-      });
+         res.cookie("sessionToken", token, {
+            maxAge: 168 * 3600000,
+            secure: true,
+            httpOnly: true,
+            sameSite: "strict",
+         });
 
-      res.cookie("isLoggedIn", "true", {
-         maxAge: 168 * 3600000,
-         secure: true,
-         httpOnly: false,
-         sameSite: "strict",
-      });
+         res.cookie("isLoggedIn", "true", {
+            maxAge: 168 * 3600000,
+            secure: true,
+            httpOnly: false,
+            sameSite: "strict",
+         });
 
-      res.json({
-         success: true,
-         message: "Logged in successfully!",
-      });
-   } catch (error) {
-      res.status(500).json({ error: error.message });
-   }
-});
+         res.json({
+            success: true,
+            message: "Logged in successfully!",
+         });
+      } catch (error) {
+         res.status(500).json({ error: error.message });
+      }
+   },
+);
 
 userRouter.get("/auth/user", authenticateToken, async (req, res) => {
    try {
@@ -75,34 +78,42 @@ userRouter.get("/auth/user", authenticateToken, async (req, res) => {
    }
 });
 
-userRouter.put("/auth/reset-password", validatePayload, async (req, res) => {
-   try {
-      const { email, password } = req.body;
-      const user = await Users.findOne({ email }).lean().maxTimeMS(5000);
-      if (!user)
-         return res
-            .status(404)
-            .json({ error: "Cannot find account associated with this email." });
+userRouter.put(
+   "/auth/reset-password",
+   validatePayload,
+   validateUserByEmail,
+   async (req, res) => {
+      try {
+         const { email, password } = req.body;
+         const hash = await getHashedPassword(password);
+         if (!hash)
+            return res
+               .status(500)
+               .json({ error: "Internal server error while processing password." });
 
-      const hash = await getHashedPassword(password);
-      if (!hash)
-         return res
-            .status(500)
-            .json({ error: "Internal server error while processing password." });
+         const result = await Users.updateOne(
+            { email },
+            { $set: { password: hash } },
+            { runValidators: true },
+         );
+         res.json({
+            success: true,
+            message: "password updated successfully",
+            modifiedCount: result.modifiedCount,
+         });
+      } catch (error) {
+         res.status(500).json({ error: error.message });
+      }
+   },
+);
 
-      const result = await Users.updateOne(
-         { email },
-         { $set: { password: hash } },
-         { runValidators: true },
-      );
-      res.json({
-         success: true,
-         message: "password updated successfully",
-         modifiedCount: result.modifiedCount,
-      });
-   } catch (error) {
-      res.status(500).json({ error: error.message });
-   }
-});
+userRouter.post(
+   "/auth/validate-user",
+   validatePayload,
+   validateUserByEmail,
+   async (req, res) => {
+      res.json({ success: true });
+   },
+);
 
 export default userRouter;
