@@ -1,15 +1,27 @@
-import { CheckCircleIcon, EyeIcon, EyeSlashIcon, LockKeyIcon } from "@phosphor-icons/react";
-import { Field, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
-import { getStrength } from "@/utilis/getStrength";
-import { useState } from "react";
+import {
+   CheckCircleIcon,
+   EyeIcon,
+   EyeSlashIcon,
+   LockKeyIcon,
+} from "@phosphor-icons/react"
+import { Field, FieldLabel } from "../ui/field"
+import { Input } from "../ui/input"
+import { getStrength } from "@/utilis/getStrength"
+import { useState, type Dispatch, type SetStateAction } from "react"
 import { cn } from "@/lib/utils"
-import getRequirements from "@/utilis/getRequirements";
+import getRequirements from "@/utilis/getRequirements"
 
 interface PasswordFieldsProps {
-
+   setPasswordConfig: Dispatch<
+      SetStateAction<{
+         email: string
+         password: string
+      }>
+   >
 }
-export default function PasswordFields({ }: PasswordFieldsProps) {
+export default function PasswordFields({
+   setPasswordConfig,
+}: PasswordFieldsProps) {
    const [password, setPassword] = useState("")
    const [showPassword, setShowPassword] = useState(false)
    const [confirmPassword, setConfirmPassword] = useState("")
@@ -18,12 +30,12 @@ export default function PasswordFields({ }: PasswordFieldsProps) {
    const requirements = getRequirements(password)
    const passedCount = requirements.filter((r) => r.met).length
    const strength = getStrength(passedCount, password)
+
+
    return (
       <div className="space-y-4">
          <Field>
-            <FieldLabel htmlFor="password">
-               Enter new password
-            </FieldLabel>
+            <FieldLabel htmlFor="password">Enter new password</FieldLabel>
             <div className="relative">
                <LockKeyIcon
                   weight="duotone"
@@ -42,9 +54,7 @@ export default function PasswordFields({ }: PasswordFieldsProps) {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground focus:outline-none"
-                  aria-label={
-                     showPassword ? "Hide password" : "Show password"
-                  }
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                >
                   {showPassword ? (
                      <EyeSlashIcon weight="duotone" className="size-4" />
@@ -57,14 +67,9 @@ export default function PasswordFields({ }: PasswordFieldsProps) {
 
          <div className="space-y-2.5 pt-0.5">
             <div className="flex items-center justify-between text-xs">
-               <span className="text-muted-foreground">
-                  Password strength
-               </span>
+               <span className="text-muted-foreground">Password strength</span>
                <span
-                  className={cn(
-                     "font-medium transition-colors",
-                     strength.textColor
-                  )}
+                  className={cn("font-medium transition-colors", strength.textColor)}
                >
                   {strength.label || "Too weak"}
                </span>
@@ -83,9 +88,7 @@ export default function PasswordFields({ }: PasswordFieldsProps) {
                      key={index}
                      className={cn(
                         "h-1.5 rounded-full transition-all duration-300",
-                        index <= strength.bars
-                           ? strength.color
-                           : "bg-muted"
+                        index <= strength.bars ? strength.color : "bg-muted"
                      )}
                   />
                ))}
@@ -113,9 +116,7 @@ export default function PasswordFields({ }: PasswordFieldsProps) {
                            weight={req.met ? "fill" : "regular"}
                            className={cn(
                               "size-3.5 shrink-0 transition-colors",
-                              req.met
-                                 ? "text-emerald-500"
-                                 : "text-muted-foreground/35"
+                              req.met ? "text-emerald-500" : "text-muted-foreground/35"
                            )}
                         />
                         <span>{req.label}</span>
@@ -126,9 +127,7 @@ export default function PasswordFields({ }: PasswordFieldsProps) {
          </div>
 
          <Field>
-            <FieldLabel htmlFor="confirmPassword">
-               Re-enter new password
-            </FieldLabel>
+            <FieldLabel htmlFor="confirmPassword">Re-enter new password</FieldLabel>
             <div className="relative">
                <LockKeyIcon
                   weight="duotone"
@@ -141,19 +140,17 @@ export default function PasswordFields({ }: PasswordFieldsProps) {
                   placeholder="••••••••"
                   className="pr-9 pl-9"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => {
+                     setConfirmPassword(e.target.value)
+                     if (password === e.target.value)
+                        setPasswordConfig((prev) => ({ ...prev, password: e.target.value }))
+                  }}
                />
                <button
                   type="button"
-                  onClick={() =>
-                     setShowConfirmPassword(!showConfirmPassword)
-                  }
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground focus:outline-none"
-                  aria-label={
-                     showConfirmPassword
-                        ? "Hide password"
-                        : "Show password"
-                  }
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                >
                   {showConfirmPassword ? (
                      <EyeSlashIcon weight="duotone" className="size-4" />

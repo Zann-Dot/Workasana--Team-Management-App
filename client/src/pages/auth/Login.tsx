@@ -150,15 +150,15 @@ export default function LoginPage() {
                      </Field>
 
                      <Field data-invalid={isPasswordInvalid}>
-                        <Link to="/login/forget-password" className="flex items-center justify-between">
+                        <div className="flex items-center justify-between">
                            <Label htmlFor="password">Password</Label>
-                           <a
-                              href="#forgot-password"
+                           <Link
+                              to="/login/forget-password"
                               className="text-xs font-medium text-primary hover:underline"
                            >
                               Forgot password?
-                           </a>
-                        </Link>
+                           </Link>
+                        </div>
                         <div className="relative">
                            <LockKeyIcon
                               weight="duotone"

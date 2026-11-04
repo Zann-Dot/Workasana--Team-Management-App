@@ -19,3 +19,22 @@ export async function loginAuth(payload: Login) {
         }
     }
 }
+
+export async function resetPassword(passwordConfig: Login) {
+    try {
+        const res = await axios.put("/api/auth/reset-password", passwordConfig)
+        return res?.data
+    } catch (error: any) {
+        if (error.response) {
+            const message =
+                error.response.data?.error || "An unexpected server error occurred."
+            return Promise.reject(new Error(message))
+        } else if (error.request) {
+            return Promise.reject(
+                new Error("Network error. Please check your internet connection.")
+            )
+        } else {
+            return Promise.reject(new Error(error.message))
+        }
+    }
+}

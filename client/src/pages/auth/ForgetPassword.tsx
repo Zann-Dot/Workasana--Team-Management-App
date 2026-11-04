@@ -6,6 +6,7 @@ import {
    CheckIcon,
    EnvelopeSimpleIcon,
    SparkleIcon,
+   WarningCircleIcon,
 } from "@phosphor-icons/react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -16,6 +17,8 @@ import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import Stepper from "@/components/auth/Stepper"
 import PasswordFields from "@/components/auth/PasswordFields"
+import axios from "axios"
+import { useResetPassword } from "@/hooks/useUser"
 
 const STEPS = [
    { id: 1, title: "Step 1", label: "Email" },
@@ -24,13 +27,48 @@ const STEPS = [
 ]
 
 export default function ForgetPassword() {
+   const [passwordConfig, setPasswordConfig] = useState({
+      email: "",
+      password: "",
+   })
+   const [error, setError] = useState("")
    const [currentStep, setCurrentStep] = useState(1)
    const [email, setEmail] = useState("")
 
-   const handleNext = () => {
-      if (currentStep < STEPS.length) {
-         setCurrentStep((prev) => prev + 1)
+   const { mutate: resetPassword } = useResetPassword();
+
+   async function validateEmail() {
+      try {
+         const res = await axios.post("/api/auth/validate-user", { email })
+         return res?.data?.success
+      } catch (error) {
+         setError("Please provide a valid email.")
       }
+   }
+
+   const handleNext = async () => {
+      const isSuccess = await validateEmail()
+      if (isSuccess) {
+         setError("")
+         setPasswordConfig((prev) => ({ ...prev, email }))
+         if (currentStep < STEPS.length) {
+            setCurrentStep((prev) => prev + 1)
+         }
+      }
+   }
+
+   const handleSave = async () => {
+      console.log(passwordConfig)
+      resetPassword(passwordConfig, {
+         onSuccess: () => {
+            setError("")
+            setPasswordConfig({ email: "", password: "" });
+            if (currentStep < STEPS.length) {
+               setCurrentStep((prev) => prev + 1)
+            }
+         },
+         onError: (err) => setError(err.message)
+      })
    }
 
    const handlePrev = () => {
@@ -71,7 +109,7 @@ export default function ForgetPassword() {
                         />
                      </nav>
 
-                     <div>
+                     <div className="mb-3">
                         {currentStep === 1 && (
                            <Field>
                               <FieldLabel htmlFor="email">Enter email address</FieldLabel>
@@ -93,7 +131,7 @@ export default function ForgetPassword() {
                            </Field>
                         )}
 
-                        {currentStep === 2 && <PasswordFields />}
+                        {currentStep === 2 && <PasswordFields setPasswordConfig={setPasswordConfig} />}
 
                         {currentStep === 3 && (
                            <div className="flex flex-col items-center justify-center py-6 text-center">
@@ -112,14 +150,18 @@ export default function ForgetPassword() {
                            </div>
                         )}
                      </div>
-
-                     <div className="flex items-center justify-between gap-2 pt-1">
+                     {error && (
+                        <div className="mb-2 flex items-center gap-1 text-destructive">
+                           <WarningCircleIcon /> {error}
+                        </div>
+                     )}
+                     <div className="flex items-center justify-between gap-2 pt-1" hidden={currentStep === 3}>
                         <Button
                            type="button"
                            variant="outline"
                            size="sm"
                            onClick={handlePrev}
-                           hidden={currentStep === 1 || currentStep === 3}
+                           hidden={currentStep === 1}
                            className="gap-1.5"
                         >
                            <ArrowLeftIcon weight="bold" className="size-3.5" />
@@ -131,7 +173,7 @@ export default function ForgetPassword() {
                               <Button
                                  type="button"
                                  size="sm"
-                                 onClick={handleNext}
+                                 onClick={handleSave}
                                  className="gap-1.5"
                               >
                                  <span>Save</span>

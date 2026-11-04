@@ -32,14 +32,14 @@ export default function Stepper({ STEPS, currentStep, setCurrentStep }: StepperP
                         onClick={() => {
                            if (isCompleted) setCurrentStep(step.id)
                         }}
-                        disabled={!isCompleted}
+                        disabled={isCompleted}
                         className={cn(
                            "flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-all select-none",
                            isCompleted
-                              ? "bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+                              ? "bg-primary text-primary-foreground "
                               : isActive
                                  ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
-                                 : "border border-border bg-muted/60 text-muted-foreground cursor-default"
+                                 : "border border-border bg-muted/60 text-muted-foreground "
                         )}
                         aria-current={isActive ? "step" : undefined}
                         aria-label={`${step.title}: ${step.label}`}
