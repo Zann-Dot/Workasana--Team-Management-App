@@ -58,7 +58,6 @@ export default function ForgetPassword() {
    }
 
    const handleSave = async () => {
-      console.log(passwordConfig)
       resetPassword(passwordConfig, {
          onSuccess: () => {
             setError("")
