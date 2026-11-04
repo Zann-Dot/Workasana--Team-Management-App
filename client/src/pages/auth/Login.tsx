@@ -85,9 +85,9 @@ export default function LoginPage() {
       login(
          { email, password },
          {
-            onSuccess: (res) => {
+            onSuccess: (data: any) => {
                setOpen(true)
-               setAlert({ type: "success", message: res?.data?.message })
+               setAlert({ type: "success", message: data?.message })
             },
             onError: (err) => {
                setOpen(false)
