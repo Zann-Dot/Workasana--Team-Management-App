@@ -10,7 +10,9 @@ import tagsRouter from "./routes/tags.route.js";
 const app = e();
 const corsConfig = {
     origin: "https://workasana-app-one.vercel.app/",
+    method: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
+    optionSuccessStatus: 200
 };
 app.use(e.json());
 app.use(cors(corsConfig));
