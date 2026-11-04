@@ -34,7 +34,7 @@ const corsConfig = {
     optionsSuccessStatus: 200,
 };
 
-app.use(cors(corsConfig)); ṁ
+app.use(cors(corsConfig));
 app.use(e.json());
 app.use(cookieParser());
 
