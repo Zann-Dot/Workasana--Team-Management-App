@@ -19,6 +19,7 @@ import Stepper from "@/components/auth/Stepper"
 import PasswordFields from "@/components/auth/PasswordFields"
 import axios from "axios"
 import { useResetPassword } from "@/hooks/useUser"
+import { useMain } from "@/context/mainContext"
 
 const STEPS = [
    { id: 1, title: "Step 1", label: "Email" },
@@ -27,30 +28,28 @@ const STEPS = [
 ]
 
 export default function ForgetPassword() {
-   const [passwordConfig, setPasswordConfig] = useState({
-      email: "",
-      password: "",
-   })
-   const [error, setError] = useState("")
-   const [currentStep, setCurrentStep] = useState(1)
-   const [email, setEmail] = useState("")
+   const { setForm, form, error, setError, resetAuthStates } = useMain()
 
-   const { mutate: resetPassword } = useResetPassword();
+   const [currentStep, setCurrentStep] = useState(1)
+
+   const { mutate: resetPassword } = useResetPassword()
 
    async function validateEmail() {
       try {
-         const res = await axios.post("/api/auth/validate-user", { email })
+         const res = await axios.post("/api/auth/validate-user", {
+            email: form.email,
+         })
          return res?.data?.success
       } catch (error) {
-         setError("Please provide a valid email.")
+         setError((prev) => ({ ...prev, email: "Please provide a valid email." }))
       }
    }
 
    const handleNext = async () => {
       const isSuccess = await validateEmail()
       if (isSuccess) {
-         setError("")
-         setPasswordConfig((prev) => ({ ...prev, email }))
+         setError({ email: "" })
+         setForm((prev) => ({ ...prev, email: form.email }))
          if (currentStep < STEPS.length) {
             setCurrentStep((prev) => prev + 1)
          }
@@ -58,15 +57,16 @@ export default function ForgetPassword() {
    }
 
    const handleSave = async () => {
-      resetPassword(passwordConfig, {
+      const payload = { email: form.email, password: form.password }
+      resetPassword(payload, {
          onSuccess: () => {
-            setError("")
-            setPasswordConfig({ email: "", password: "" });
+            resetAuthStates()
             if (currentStep < STEPS.length) {
                setCurrentStep((prev) => prev + 1)
             }
          },
-         onError: (err) => setError(err.message)
+         onError: (err) =>
+            setError((prev) => ({ ...prev, password: err.message })),
       })
    }
 
@@ -123,14 +123,19 @@ export default function ForgetPassword() {
                                     name="email"
                                     placeholder="name@company.com"
                                     className="pl-9"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={form.email}
+                                    onChange={(e) =>
+                                       setForm((prev) => ({
+                                          ...prev,
+                                          email: e.target.value,
+                                       }))
+                                    }
                                  />
                               </div>
                            </Field>
                         )}
 
-                        {currentStep === 2 && <PasswordFields setPasswordConfig={setPasswordConfig} />}
+                        {currentStep === 2 && <PasswordFields />}
 
                         {currentStep === 3 && (
                            <div className="flex flex-col items-center justify-center py-6 text-center">
@@ -149,12 +154,15 @@ export default function ForgetPassword() {
                            </div>
                         )}
                      </div>
-                     {error && (
+                     {error.email && (
                         <div className="mb-2 flex items-center gap-1 text-destructive">
-                           <WarningCircleIcon /> {error}
+                           <WarningCircleIcon /> {error.email}
                         </div>
                      )}
-                     <div className="flex items-center justify-between gap-2 pt-1" hidden={currentStep === 3}>
+                     <div
+                        className="flex items-center justify-between gap-2 pt-1"
+                        hidden={currentStep === 3}
+                     >
                         <Button
                            type="button"
                            variant="outline"
