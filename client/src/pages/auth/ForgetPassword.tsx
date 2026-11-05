@@ -28,17 +28,8 @@ const STEPS = [
 ]
 
 export default function ForgetPassword() {
-<<<<<<< HEAD
    const { setForm, form, error, setError, resetAuthStates } = useMain()
-=======
-   const { setForm, form } = useMain()
-   const [error, setError] = useState("")
    const [currentStep, setCurrentStep] = useState(1)
-   const [email, setEmail] = useState("")
->>>>>>> 775c058542a9445ea1b297b97ddd125130dd9d07
-
-   const [currentStep, setCurrentStep] = useState(1)
-
    const { mutate: resetPassword } = useResetPassword()
 
    async function validateEmail() {
@@ -55,13 +46,8 @@ export default function ForgetPassword() {
    const handleNext = async () => {
       const isSuccess = await validateEmail()
       if (isSuccess) {
-<<<<<<< HEAD
          setError({ email: "" })
          setForm((prev) => ({ ...prev, email: form.email }))
-=======
-         setError("")
-         setForm((prev) => ({ ...prev, email }))
->>>>>>> 775c058542a9445ea1b297b97ddd125130dd9d07
          if (currentStep < STEPS.length) {
             setCurrentStep((prev) => prev + 1)
          }
@@ -72,12 +58,7 @@ export default function ForgetPassword() {
       const payload = { email: form.email, password: form.password }
       resetPassword(payload, {
          onSuccess: () => {
-<<<<<<< HEAD
             resetAuthStates()
-=======
-            setError("")
-            setForm({ email: "", password: "" });
->>>>>>> 775c058542a9445ea1b297b97ddd125130dd9d07
             if (currentStep < STEPS.length) {
                setCurrentStep((prev) => prev + 1)
             }
