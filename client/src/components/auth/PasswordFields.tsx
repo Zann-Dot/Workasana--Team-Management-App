@@ -14,13 +14,16 @@ import getRequirements from "@/utilis/getRequirements"
 interface PasswordFieldsProps {
    setPasswordConfig: Dispatch<
       SetStateAction<{
+         name?: string,
          email: string
          password: string
       }>
-   >
+   >,
+   isPasswordInvalid?: boolean
 }
 export default function PasswordFields({
    setPasswordConfig,
+   isPasswordInvalid
 }: PasswordFieldsProps) {
    const [password, setPassword] = useState("")
    const [showPassword, setShowPassword] = useState(false)
@@ -30,11 +33,9 @@ export default function PasswordFields({
    const requirements = getRequirements(password)
    const passedCount = requirements.filter((r) => r.met).length
    const strength = getStrength(passedCount, password)
-
-
    return (
       <div className="space-y-4">
-         <Field>
+         <Field data-invalid={isPasswordInvalid}>
             <FieldLabel htmlFor="password">Enter new password</FieldLabel>
             <div className="relative">
                <LockKeyIcon
@@ -49,6 +50,7 @@ export default function PasswordFields({
                   className="pr-9 pl-9"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  aria-invalid={isPasswordInvalid}
                />
                <button
                   type="button"
@@ -126,7 +128,7 @@ export default function PasswordFields({
             </div>
          </div>
 
-         <Field>
+         <Field data-invalid={isPasswordInvalid}>
             <FieldLabel htmlFor="confirmPassword">Re-enter new password</FieldLabel>
             <div className="relative">
                <LockKeyIcon
@@ -140,6 +142,7 @@ export default function PasswordFields({
                   placeholder="••••••••"
                   className="pr-9 pl-9"
                   value={confirmPassword}
+                  aria-invalid={isPasswordInvalid}
                   onChange={(e) => {
                      setConfirmPassword(e.target.value)
                      if (password === e.target.value)
