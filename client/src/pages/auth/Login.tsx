@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent } from "react"
+import { useEffect, useState } from "react"
 import {
    ArrowRightIcon,
    CheckCircleIcon,
@@ -15,98 +15,67 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Link, useNavigate } from "react-router"
+import { Link, Navigate, useNavigate } from "react-router"
 import { useLoginAuth } from "@/hooks/useUser"
 import AlertDialog from "@/components/AlertDialog"
 import { Field, FieldLabel } from "@/components/ui/field"
+import { useMain } from "@/context/mainContext"
 
-export interface Alert {
-   type: "success" | "error" | "loading" | ""
-   message?: string
-}
-
-interface ErrorMessage {
-   email?: string
-   password?: string
-}
 export default function LoginPage() {
    const navigate = useNavigate()
    const [showPassword, setShowPassword] = useState(false)
-   const [open, setOpen] = useState(false)
-   const [errorMessage, setErrorMessage] = useState<ErrorMessage>({
-      email: "",
-      password: "",
-   })
-   const [alert, setAlert] = useState<Alert>({ type: "", message: "" })
-   const { mutate: login, isPending, isSuccess } = useLoginAuth()
+   const {
+      validateField,
+      form,
+      setError,
+      error: errorMessage,
+      handleChange,
+      isEmailInvalid,
+      isPasswordInvalid,
+      setAlert,
+      setOpen,
+      resetAuthStates,
+   } = useMain()
 
-   useEffect(() => {
-      if (isPending && (!errorMessage.email || !errorMessage.password)) {
+   const { mutate: login } = useLoginAuth()
+
+   function handleSubmit() {
+      if (!errorMessage.email && !errorMessage.password && !errorMessage.name) {
          setOpen(true)
          setAlert({ type: "loading" })
       }
+      const email = validateField("email", form.email)
+      const password = validateField("password", form.password)
 
-      if (isSuccess) {
-         setTimeout(() => {
-            navigate("/dashboard")
-         }, 1500)
-      }
-   }, [isPending, isSuccess])
-
-   function validateField(name: string, value: string) {
-      if (name === "email") {
-         if (!value.trim()) return "Email is required"
-         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
-            return "Please enter a valid email address"
-      } else {
-         if (!value.trim()) return "Password is required"
-      }
-   }
-
-   function handleChange(e: ChangeEvent<HTMLInputElement>) {
-      const { value, name } = e.target
-      if (errorMessage.email || errorMessage.password) {
-         const message = validateField(name, value)
-         setErrorMessage((prev) => ({ ...prev, [name]: message ?? "" }))
-      }
-   }
-
-   function handleSubmit(formData: FormData) {
-      const email = formData.get("email") as string
-      const password = formData.get("password") as string
-
-      const emailError = validateField("email", email)
-      const passwordError = validateField("password", password)
-
-      setErrorMessage({
-         email: emailError,
-         password: passwordError,
+      setError({
+         email,
+         password,
       })
-      login(
-         { email, password },
-         {
-            onSuccess: (data: any) => {
-               setOpen(true)
-               setAlert({ type: "success", message: data?.message })
-            },
-            onError: (err) => {
-               setOpen(false)
-               if (err.message.includes("Invalid email or password"))
-                  setErrorMessage((prev) => ({ ...prev, password: err.message }))
 
-               if (err.message.includes("Cannot find account"))
-                  setErrorMessage((prev) => ({ ...prev, email: err.message }))
-            },
-         }
-      )
+      const payload = { email: form.email, password: form.password }
+      login(payload, {
+         onSuccess: (data: any) => {
+            setOpen(true)
+            setAlert({ type: "success", message: data?.message })
+            setTimeout(() => {
+               navigate("/dashboard")
+            }, 1500)
+         },
+         onError: (err) => {
+            setOpen(false)
+            if (err.message.includes("Invalid email or password"))
+               setError((prev) => ({ ...prev, password: err.message }))
+
+            if (err.message.includes("Cannot find account"))
+               setError((prev) => ({ ...prev, email: err.message }))
+         },
+      })
    }
-
-   const isEmailInvalid = Boolean(errorMessage.email)
-   const isPasswordInvalid = Boolean(errorMessage.password)
 
    return (
       <main className="relative mb-10 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-         <AlertDialog open={open} setOpen={setOpen} alert={alert} />
+         <AlertDialog />
+
          <div className="absolute inset-0 -z-10 bg-linear-to-b from-muted/60 to-background" />
          <div className="w-full max-w-md">
             <div className="mb-6 flex flex-col items-center text-center">
@@ -143,6 +112,7 @@ export default function LoginPage() {
                               name="email"
                               placeholder="name@company.com"
                               className="pl-9"
+                              value={form.email ?? ""}
                               onChange={handleChange}
                               aria-invalid={isEmailInvalid}
                            />

@@ -10,21 +10,21 @@ import { getStrength } from "@/utilis/getStrength"
 import { useState, type Dispatch, type SetStateAction } from "react"
 import { cn } from "@/lib/utils"
 import getRequirements from "@/utilis/getRequirements"
+import { useMain } from "@/context/mainContext"
 
 interface PasswordFieldsProps {
-   setPasswordConfig: Dispatch<
+   setForm?: Dispatch<
       SetStateAction<{
-         name?: string,
+         name?: string
          email: string
          password: string
       }>
-   >,
-   isPasswordInvalid?: boolean
+   >
 }
 export default function PasswordFields({
-   setPasswordConfig,
-   isPasswordInvalid
+
 }: PasswordFieldsProps) {
+   const { validateField, setError, isPasswordInvalid, setForm } = useMain()
    const [password, setPassword] = useState("")
    const [showPassword, setShowPassword] = useState(false)
    const [confirmPassword, setConfirmPassword] = useState("")
@@ -49,7 +49,14 @@ export default function PasswordFields({
                   placeholder="••••••••"
                   className="pr-9 pl-9"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                     const error = validateField("/password", e.target.value)
+                     setError((prev) => ({ ...prev, password: error }))
+                     setPassword(e.target.value)
+                     if (confirmPassword !== e.target.value) {
+                        setError((prev) => ({ ...prev, password: "Confirm password should match" }))
+                     }
+                  }}
                   aria-invalid={isPasswordInvalid}
                />
                <button
@@ -144,9 +151,14 @@ export default function PasswordFields({
                   value={confirmPassword}
                   aria-invalid={isPasswordInvalid}
                   onChange={(e) => {
+                     const error = validateField("/password", e.target.value)
+                     setError((prev) => ({ ...prev, password: error }))
                      setConfirmPassword(e.target.value)
                      if (password === e.target.value)
-                        setPasswordConfig((prev) => ({ ...prev, password: e.target.value }))
+                        setForm((prev) => ({
+                           ...prev,
+                           password: e.target.value,
+                        }))
                   }}
                />
                <button

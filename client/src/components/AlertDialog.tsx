@@ -8,20 +8,12 @@ import {
 } from "@/components/ui/dialog"
 import { CheckCircleIcon, XIcon } from "@phosphor-icons/react"
 import { Button } from "./ui/button"
-import type { Dispatch, SetStateAction } from "react"
-import type { Alert } from "@/pages/auth/Login"
+import { useMain } from "@/context/mainContext"
 
-interface AlertDialogProps {
-   open: boolean
-   setOpen: Dispatch<SetStateAction<boolean>>
-   alert: Alert
-}
+interface AlertDialogProps { }
 
-export default function AlertDialog({
-   open,
-   setOpen,
-   alert,
-}: AlertDialogProps) {
+export default function AlertDialog({ }: AlertDialogProps) {
+   const { open, setOpen, alert } = useMain()
    return (
       <Dialog open={open}>
          <DialogContent showCloseButton={false}>
