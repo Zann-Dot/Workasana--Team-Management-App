@@ -13,9 +13,9 @@ import { useMain } from "@/context/mainContext"
 interface AlertDialogProps { }
 
 export default function AlertDialog({ }: AlertDialogProps) {
-   const { open, setOpen, alert } = useMain()
+   const { setAlert, alert } = useMain()
    return (
-      <Dialog open={open}>
+      <Dialog open={alert.open}>
          <DialogContent showCloseButton={false}>
             {alert.type === "error" && (
                <DialogClose
@@ -24,7 +24,7 @@ export default function AlertDialog({ }: AlertDialogProps) {
                         variant="ghost"
                         className="absolute top-4 right-4"
                         size="icon-sm"
-                        onClick={() => setOpen(false)}
+                        onClick={() => setAlert({ open: false, type: "" })}
                      />
                   }
                >

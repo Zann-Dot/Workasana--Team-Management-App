@@ -33,16 +33,13 @@ export default function LoginPage() {
       isEmailInvalid,
       isPasswordInvalid,
       setAlert,
-      setOpen,
-      resetAuthStates,
    } = useMain()
 
    const { mutate: login } = useLoginAuth()
 
    function handleSubmit() {
       if (!errorMessage.email && !errorMessage.password && !errorMessage.name) {
-         setOpen(true)
-         setAlert({ type: "loading" })
+         setAlert({ open: true, type: "loading" })
       }
       const email = validateField("email", form.email)
       const password = validateField("password", form.password)
@@ -55,14 +52,13 @@ export default function LoginPage() {
       const payload = { email: form.email, password: form.password }
       login(payload, {
          onSuccess: (data: any) => {
-            setOpen(true)
-            setAlert({ type: "success", message: data?.message })
+            setAlert({ open: true, type: "success", message: data?.message })
             setTimeout(() => {
                navigate("/dashboard")
             }, 1500)
          },
          onError: (err) => {
-            setOpen(false)
+            setAlert({ open: false, type: "" })
             if (err.message.includes("Invalid email or password"))
                setError((prev) => ({ ...prev, password: err.message }))
 

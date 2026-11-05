@@ -29,17 +29,14 @@ export default function SignupPage() {
       isNameInvalid,
       isEmailInvalid,
       isPasswordInvalid,
-      setOpen,
       setAlert,
-      resetAuthStates,
    } = useMain()
    const { mutate: signup } = useSignup()
    const navigate = useNavigate()
 
    function handleSubmit() {
       if (!errorMessage.email && !errorMessage.password && !errorMessage.name) {
-         setOpen(true)
-         setAlert({ type: "loading" })
+         setAlert({ type: "loading", open: true })
       }
       const name = validateField("name", form.name)
       const email = validateField("email", form.email)
@@ -53,14 +50,13 @@ export default function SignupPage() {
       const payload = form
       signup(payload, {
          onSuccess: (data: any) => {
-            setOpen(true)
-            setAlert({ type: "success", message: data?.message })
+            setAlert({ open: true, type: "success", message: data?.message })
             setTimeout(() => {
                navigate("/login")
             }, 1500)
          },
          onError: (err) => {
-            setOpen(false)
+            setAlert({ open: false, type: "error" })
             if (err.message.includes("Email already"))
                setError((prev) => ({ ...prev, email: err.message }))
          },

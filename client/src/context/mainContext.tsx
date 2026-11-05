@@ -27,9 +27,10 @@ interface FormType {
     password: string
 }
 
-export interface AlertType {
+interface AlertType {
     type: "success" | "error" | "loading" | ""
     message?: string
+    open: boolean
 }
 
 interface ContextType {
@@ -45,8 +46,6 @@ interface ContextType {
     setError: setState<ErrorType>
     alert: AlertType
     setAlert: setState<AlertType>
-    open: boolean
-    setOpen: setState<boolean>
     isNameInvalid: boolean
     isEmailInvalid: boolean
     isPasswordInvalid: boolean
@@ -60,8 +59,11 @@ export const useMain = () => {
 }
 
 export function ContextProvider({ children }: React.PropsWithChildren) {
-    const [open, setOpen] = useState(false)
-    const [alert, setAlert] = useState<AlertType>({ type: "", message: "" })
+    const [alert, setAlert] = useState<AlertType>({
+        open: false,
+        type: "",
+        message: "",
+    })
     const [form, setForm] = useState<FormType>({
         name: "",
         email: "",
@@ -84,7 +86,7 @@ export function ContextProvider({ children }: React.PropsWithChildren) {
             email: "",
             password: "",
         })
-        setOpen(false)
+        setAlert({ open: false, type: "" })
     }
 
     function validateField(name?: string, value?: string): ValidateFieldType {
@@ -122,8 +124,6 @@ export function ContextProvider({ children }: React.PropsWithChildren) {
         isNameInvalid,
         isEmailInvalid,
         isPasswordInvalid,
-        open,
-        setOpen,
         alert,
         setAlert,
         resetAuthStates,
