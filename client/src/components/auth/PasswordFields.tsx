@@ -13,13 +13,7 @@ import getRequirements from "@/utilis/getRequirements"
 import { useMain } from "@/context/mainContext"
 
 interface PasswordFieldsProps {
-   setForm?: Dispatch<
-      SetStateAction<{
-         name?: string
-         email: string
-         password: string
-      }>
-   >
+
 }
 export default function PasswordFields({
 

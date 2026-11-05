@@ -19,6 +19,7 @@ import Stepper from "@/components/auth/Stepper"
 import PasswordFields from "@/components/auth/PasswordFields"
 import axios from "axios"
 import { useResetPassword } from "@/hooks/useUser"
+import { useMain } from "@/context/mainContext"
 
 const STEPS = [
    { id: 1, title: "Step 1", label: "Email" },
@@ -27,10 +28,7 @@ const STEPS = [
 ]
 
 export default function ForgetPassword() {
-   const [passwordConfig, setPasswordConfig] = useState({
-      email: "",
-      password: "",
-   })
+   const { setForm, form } = useMain()
    const [error, setError] = useState("")
    const [currentStep, setCurrentStep] = useState(1)
    const [email, setEmail] = useState("")
@@ -50,7 +48,7 @@ export default function ForgetPassword() {
       const isSuccess = await validateEmail()
       if (isSuccess) {
          setError("")
-         setPasswordConfig((prev) => ({ ...prev, email }))
+         setForm((prev) => ({ ...prev, email }))
          if (currentStep < STEPS.length) {
             setCurrentStep((prev) => prev + 1)
          }
@@ -58,10 +56,11 @@ export default function ForgetPassword() {
    }
 
    const handleSave = async () => {
-      resetPassword(passwordConfig, {
+      const payload = { email: form.email, password: form.password }
+      resetPassword(payload, {
          onSuccess: () => {
             setError("")
-            setPasswordConfig({ email: "", password: "" });
+            setForm({ email: "", password: "" });
             if (currentStep < STEPS.length) {
                setCurrentStep((prev) => prev + 1)
             }
@@ -130,7 +129,7 @@ export default function ForgetPassword() {
                            </Field>
                         )}
 
-                        {currentStep === 2 && <PasswordFields setPasswordConfig={setPasswordConfig} />}
+                        {currentStep === 2 && <PasswordFields />}
 
                         {currentStep === 3 && (
                            <div className="flex flex-col items-center justify-center py-6 text-center">
