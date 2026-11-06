@@ -50,6 +50,7 @@ userRouter.post(
             secure: true,
             httpOnly: true,
             sameSite: "none",
+            partitioned: true,
          });
 
          res.cookie("isLoggedIn", "true", {
@@ -57,6 +58,7 @@ userRouter.post(
             secure: true,
             httpOnly: false,
             sameSite: "none",
+            partitioned: true,
          });
 
          res.json({
