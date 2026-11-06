@@ -52,6 +52,7 @@ export default function LoginPage() {
       const payload = { email: form.email, password: form.password }
       login(payload, {
          onSuccess: (data: any) => {
+            localStorage.setItem("isLoggedIn", "true")
             setAlert({ open: true, type: "success", message: data?.message })
             setTimeout(() => {
                navigate("/dashboard")
