@@ -49,14 +49,14 @@ userRouter.post(
             maxAge: 168 * 3600000,
             secure: true,
             httpOnly: true,
-            sameSite: "strict",
+            sameSite: "none",
          });
 
          res.cookie("isLoggedIn", "true", {
             maxAge: 168 * 3600000,
             secure: true,
             httpOnly: false,
-            sameSite: "strict",
+            sameSite: "none",
          });
 
          res.json({

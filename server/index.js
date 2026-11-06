@@ -10,25 +10,8 @@ import projectRouter from "./routes/projects.route.js";
 import tagsRouter from "./routes/tags.route.js";
 
 const app = e();
-
-const allowedOrigins = [
-    "https://workasana-app-one.vercel.app",
-    "http://localhost:5173",
-    "http://localhost:3000",
-];
-
 const corsConfig = {
-    origin: (origin, callback) => {
-        if (!origin) return callback(null, true);
-        const cleanOrigin = origin.replace(/\/$/, "");
-        if (
-            allowedOrigins.includes(cleanOrigin) ||
-            cleanOrigin.endsWith(".vercel.app")
-        ) {
-            return callback(null, true);
-        }
-        return callback(new Error("CORS policy violation: origin not allowed"), false);
-    },
+    origin: "https://workasana-app-one.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
     optionsSuccessStatus: 200,
