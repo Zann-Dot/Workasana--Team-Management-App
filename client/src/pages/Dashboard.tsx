@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card"
 import ProjectSection from "@/components/dashboard/ProjectSection"
 import TaskSection from "@/components/dashboard/TaskSection"
-import STATS from "@/utilis/getDashboardStats"
+import { getStats } from "@/utilis/getDashboardStats"
 
 function PriorityDot({ priority }: { priority: string }) {
    const colors: Record<string, string> = {
@@ -27,6 +27,8 @@ function PriorityDot({ priority }: { priority: string }) {
 }
 
 export default function Dashboard() {
+   const STATS = getStats();
+
    return (
       <>
          <div className="flex min-h-[calc(100vh-4rem-81px)] flex-1 flex-col overflow-auto">
