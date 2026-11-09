@@ -8,6 +8,7 @@ import taskRouter from "./routes/task.route.js";
 import teamRouter from "./routes/team.route.js";
 import projectRouter from "./routes/projects.route.js";
 import tagsRouter from "./routes/tags.route.js";
+import reportRouter from "./routes/reports.route.js";
 
 const app = e();
 const corsConfig = {
@@ -40,6 +41,7 @@ app.use("/api", taskRouter);
 app.use("/api", teamRouter);
 app.use("/api", projectRouter);
 app.use("/api", tagsRouter);
+app.use("/api", reportRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
