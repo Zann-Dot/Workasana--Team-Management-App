@@ -3,6 +3,9 @@ import Tasks from "../models/Task.js";
 const reportRouter = express.Router();
 
 reportRouter.get("/reports/dashboard", async (req, res) => {
+   const thisYear = new Date().getFullYear();
+   const startDate = new Date(`${thisYear}-01-01T00:00:00.000Z`);
+   const endDate = new Date(`${thisYear + 1}-01-01T00:00:00.000Z`);
    try {
       const [report] = await Tasks.aggregate([
          {
