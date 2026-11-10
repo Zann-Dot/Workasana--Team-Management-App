@@ -1,4 +1,12 @@
 import express from "express";
+import {
+   endOfMonth,
+   endOfToday,
+   endOfWeek,
+   startOfMonth,
+   startOfToday,
+   startOfWeek,
+} from "date-fns";
 import Tasks from "../models/Task.js";
 const reportRouter = express.Router();
 
@@ -75,9 +83,9 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
                   {
                      $match: {
                         status: {
-                           $ne: "completed"
-                        }
-                     }
+                           $ne: "completed",
+                        },
+                     },
                   },
                   {
                      $project: {
@@ -102,44 +110,124 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
                      },
                   },
                   {
-                     $match: { overdue: true }
+                     $match: { overdue: true },
                   },
-                  { $count: "overdue" }
+                  { $count: "overdue" },
+               ],
+
+               projectsThisMonthSummary: [
+                  {
+                     $match: {
+                        $and: [
+                           { createdAt: { $gte: startOfMonth(new Date()) } },
+                           { createdAt: { $lt: endOfMonth(new Date()) } },
+                        ],
+                     },
+                  },
+                  {
+                     $group: {
+                        _id: "$project",
+                        count: { $sum: 1 },
+                     },
+                  },
+                  {
+                     $project: {
+                        _id: 0,
+                        count: 1,
+                     },
+                  },
+               ],
+
+               tasksCompletedThisWeekSummary: [
+                  {
+                     $match: {
+                        $and: [
+                           { createdAt: { $gte: startOfWeek(new Date()) } },
+                           { createdAt: { $lt: endOfWeek(new Date()) } },
+                        ],
+                     },
+                  },
+                  {
+                     $group: {
+                        _id: null,
+                        count: {
+                           $sum: {
+                              $cond: [{ $eq: ["$status", "completed"] }, 1, 0],
+                           },
+                        },
+                     },
+                  },
+                  {
+                     $project: {
+                        _id: 0,
+                        count: 1,
+                     },
+                  },
+               ],
+
+               tasksDueTodaySummary: [
+                  {
+                     $match: {
+                        $and: [
+                           { createdAt: { $gte: startOfToday() } },
+                           { createdAt: { $lt: endOfToday() } },
+                        ],
+                     },
+                  },
+                  {
+                     $group: {
+                        _id: null,
+                        count: {
+                           $sum: {
+                              $cond: [{ $eq: ["$status", "inprogress"] }, 1, 0],
+                           },
+                        },
+                     },
+                  },
+                  {
+                     $project: {
+                        _id: 0,
+                        count: 1,
+                     },
+                  },
                ],
             },
          },
          {
             $project: {
                totalProjects: {
-                  $ifNull: [
-                     { $arrayElemAt: ["$totalProjectsSummary.count", 0] },
-                     0
-                  ]
+                  $ifNull: [{ $arrayElemAt: ["$totalProjectsSummary.count", 0] }, 0],
                },
                tasksCompleted: {
-                  $ifNull: [
-                     { $arrayElemAt: ["$tasksCompletedSummary.count", 0] },
-                     0
-                  ]
+                  $ifNull: [{ $arrayElemAt: ["$tasksCompletedSummary.count", 0] }, 0],
                },
                inProgress: {
-                  $ifNull: [
-                     { $arrayElemAt: ["$inProgressSummary.count", 0] },
-                     0
-                  ]
+                  $ifNull: [{ $arrayElemAt: ["$inProgressSummary.count", 0] }, 0],
                },
                overdue: {
+                  $ifNull: [{ $arrayElemAt: ["$overdueSummary", 0] }, 0],
+               },
+               projectsThisMonth: {
                   $ifNull: [
-                     { $arrayElemAt: ["$overdueSummary", 0] },
-                     0
-                  ]
+                     { $arrayElemAt: ["$projectsThisMonthSummary.count", 0] },
+                     0,
+                  ],
+               },
+               tasksCompletedThisWeek: {
+                  $ifNull: [
+                     { $arrayElemAt: ["$tasksCompletedThisWeekSummary.count", 0] },
+                     0,
+                  ],
+               },
+               tasksDueToday: {
+                  $ifNull: [{ $arrayElemAt: ["$tasksDueTodaySummary.count", 0] }, 0],
                },
             },
          },
       ]);
 
       if (!report)
-         return res.status(404).json({ error: "No dashboard reports found." })
+         return res.status(404).json({ error: "No dashboard reports found." });
       res.json(report);
    } catch (error) {
       res.status(500).json({ error: error.message });
