@@ -11,6 +11,8 @@ import {
 import ProjectSection from "@/components/dashboard/ProjectSection"
 import TaskSection from "@/components/dashboard/TaskSection"
 import { getStats } from "@/utilis/getDashboardStats"
+import { useDashboard } from "@/hooks/useReports"
+import { Skeleton } from "@/components/ui/skeleton"
 
 function PriorityDot({ priority }: { priority: string }) {
    const colors: Record<string, string> = {
@@ -27,7 +29,9 @@ function PriorityDot({ priority }: { priority: string }) {
 }
 
 export default function Dashboard() {
-   const STATS = getStats();
+   const { isLoading, isFetching } = useDashboard()
+   const isStatsLoading = isFetching || isLoading
+   const STATS = getStats()
 
    return (
       <>
@@ -53,10 +57,19 @@ export default function Dashboard() {
                                  <p className="text-xs font-medium text-muted-foreground">
                                     {stat.label}
                                  </p>
-                                 <p className="mt-1 text-2xl font-bold">{stat.value}</p>
-                                 <p className="mt-0.5 text-xs text-muted-foreground">
-                                    {stat.delta}
-                                 </p>
+                                 {isStatsLoading ? (
+                                    <>
+                                       <Skeleton className="h-8 w-10 my-2" />
+                                       <Skeleton className="h-3 w-10 my-2" />
+                                    </>
+                                 ) : (
+                                    <>
+                                       <p className="mt-1 text-2xl font-bold">{stat.value}</p>
+                                       <p className="mt-0.5 text-xs text-muted-foreground">
+                                          {stat.delta}
+                                       </p>
+                                    </>
+                                 )}
                               </div>
                               <div className={`rounded-lg bg-muted/60 p-2 ${stat.color}`}>
                                  <stat.icon weight="duotone" className="size-5" />
