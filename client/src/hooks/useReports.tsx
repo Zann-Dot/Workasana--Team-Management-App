@@ -5,7 +5,10 @@ export interface DashboardStats {
     totalProjects: number;
     tasksCompleted: number;
     inProgress: number;
-    overdue: number
+    overdue: number;
+    projectsThisMonth: number;
+    tasksCompletedThisWeek: number;
+    tasksDueToday: number
 }
 
 export function useDashboard() {
