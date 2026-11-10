@@ -10,7 +10,7 @@ const taskSchema = new Schema(
         },
         team: {
             type: Schema.Types.ObjectId,
-            ref: "Team",
+            ref: "Teams",
             required: true,
         },
         owners: [

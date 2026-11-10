@@ -8,5 +8,5 @@ const teamSchema = new mongoose.Schema({
     },
     description: { type: String },
 }, { timestamps: true });
-const Teams = mongoose.model("Team", teamSchema);
+const Teams = mongoose.model("Teams", teamSchema);
 export default Teams;
