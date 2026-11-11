@@ -8,7 +8,7 @@ const projectSchema = new mongoose.Schema(
             required: true,
             unique: true,
         },
-        team: {
+        teamId: {
             type: mongoose.Types.ObjectId,
             ref: "Teams",
             required: true,
@@ -19,7 +19,7 @@ const projectSchema = new mongoose.Schema(
             enum: ["inprogress", "completed", "inreview"],
             default: "inprogress",
         },
-        dueOne: {
+        dueOn: {
             type: String,
             required: true,
         },
@@ -39,7 +39,7 @@ const projectSchema = new mongoose.Schema(
 
 projectSchema.pre("save", async function () {
     if (!this.dueOne) return;
-    this.dueDate = format(this.dueOne, "MMM dd");
+    this.dueDate = format(this.dueOn, "MMM dd");
 });
 
 const Projects = mongoose.model("Project", projectSchema);
