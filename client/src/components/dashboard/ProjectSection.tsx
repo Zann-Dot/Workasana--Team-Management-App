@@ -1,3 +1,4 @@
+import { useState } from "react"
 import {
    ArrowUpRightIcon,
    CalendarBlankIcon,
@@ -6,22 +7,23 @@ import {
    ClockCountdownIcon,
    PlusIcon,
    SpinnerIcon,
-} from '@phosphor-icons/react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+} from "@phosphor-icons/react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
    Card,
    CardContent,
    CardDescription,
    CardHeader,
    CardTitle,
-} from '@/components/ui/card'
+} from "@/components/ui/card"
 import {
    Avatar,
    AvatarFallback,
    AvatarGroup,
    AvatarGroupCount,
-} from '@/components/ui/avatar'
+} from "@/components/ui/avatar"
+import NewProjectModal from "./NewProjectModal"
 
 export const PROJECTS = [
    {
@@ -104,63 +106,85 @@ function PriorityDot({ priority }: { priority: string }) {
 }
 
 export default function ProjectSection() {
+   const [modalOpen, setModalOpen] = useState(false)
+
    return (
-      <Card>
-         <CardHeader className="flex items-center justify-between border-b pb-4">
-            <div>
-               <CardTitle className="text-base">Active Projects</CardTitle>
-               <CardDescription>Your team's ongoing work</CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-               <Button variant="ghost" size="sm" type="button" className="gap-1 text-xs">
-                  View all
-                  <ArrowUpRightIcon weight="bold" className="size-3" />
-               </Button>
-               <Button size="sm" type="button" className="gap-1.5">
-                  <PlusIcon weight="bold" className="size-4" />
-                  New Project
-               </Button>
-            </div>
-         </CardHeader>
-         <CardContent className="pt-4">
-            <div className="grid grid-cols-4 space-x-4">
-               {PROJECTS.map((project) => (
-                  <div
-                     key={project.id}
-                     className="group flex flex-col gap-3 rounded-lg border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
+      <>
+         <NewProjectModal open={modalOpen} onOpenChange={setModalOpen} />
+         <Card>
+            <CardHeader className="flex items-center justify-between border-b pb-4">
+               <div>
+                  <CardTitle className="text-base">Active Projects</CardTitle>
+                  <CardDescription>Your team's ongoing work</CardDescription>
+               </div>
+               <div className="flex items-center gap-2">
+                  <Button
+                     variant="ghost"
+                     size="sm"
+                     type="button"
+                     className="gap-1 text-xs"
                   >
-                     <div className="flex flex-col flex-wrap items-start justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                           <PriorityDot priority={project.priority} />
-                           <span className="font-medium text-sm">{project.name}</span>
-                           <Badge variant="secondary" className="text-xs">{project.team}</Badge>
+                     View all
+                     <ArrowUpRightIcon weight="bold" className="size-3" />
+                  </Button>
+                  <Button
+                     size="sm"
+                     type="button"
+                     className="gap-1.5"
+                     onClick={() => setModalOpen(true)}
+                  >
+                     <PlusIcon weight="bold" className="size-4" />
+                     New Project
+                  </Button>
+               </div>
+            </CardHeader>
+            <CardContent className="pt-4">
+               <div className="grid grid-cols-4 space-x-4">
+                  {PROJECTS.map((project) => (
+                     <div
+                        key={project.id}
+                        className="group flex flex-col gap-3 rounded-lg border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
+                     >
+                        <div className="flex flex-col flex-wrap items-start justify-between gap-2">
+                           <div className="flex items-center gap-2">
+                              <PriorityDot priority={project.priority} />
+                              <span className="text-sm font-medium">{project.name}</span>
+                              <Badge variant="secondary" className="text-xs">
+                                 {project.team}
+                              </Badge>
+                           </div>
+                           <div className="flex items-center gap-2">
+                              <StatusBadge status={project.status} />
+                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                 <CalendarBlankIcon
+                                    weight="duotone"
+                                    className="size-3.5"
+                                 />
+                                 {project.dueDate}
+                              </span>
+                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                           <StatusBadge status={project.status} />
-                           <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <CalendarBlankIcon weight="duotone" className="size-3.5" />
-                              {project.dueDate}
-                           </span>
+                        <div className="flex items-center gap-3">
+                           <AvatarGroup>
+                              {project.members.slice(0, 3).map((m) => (
+                                 <Avatar key={m} size="sm">
+                                    <AvatarFallback className="text-[10px]">
+                                       {m}
+                                    </AvatarFallback>
+                                 </Avatar>
+                              ))}
+                              {project.members.length > 3 && (
+                                 <AvatarGroupCount className="text-[10px]">
+                                    +{project.members.length - 3}
+                                 </AvatarGroupCount>
+                              )}
+                           </AvatarGroup>
                         </div>
                      </div>
-                     <div className="flex items-center gap-3">
-                        <AvatarGroup>
-                           {project.members.slice(0, 3).map((m) => (
-                              <Avatar key={m} size="sm">
-                                 <AvatarFallback className="text-[10px]">{m}</AvatarFallback>
-                              </Avatar>
-                           ))}
-                           {project.members.length > 3 && (
-                              <AvatarGroupCount className="text-[10px]">
-                                 +{project.members.length - 3}
-                              </AvatarGroupCount>
-                           )}
-                        </AvatarGroup>
-                     </div>
-                  </div>
-               ))}
-            </div>
-         </CardContent>
-      </Card>
+                  ))}
+               </div>
+            </CardContent>
+         </Card>
+      </>
    )
 }
