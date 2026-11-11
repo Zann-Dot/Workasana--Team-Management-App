@@ -116,7 +116,7 @@ function StyledSelect({
                {placeholder}
             </option>
             {options.map((opt) => (
-               <option key={opt} value={opt}>
+               <option key={opt} value={opt.split(" ").join("").toLowerCase()}>
                   {opt}
                </option>
             ))}
@@ -222,6 +222,12 @@ export default function NewProjectModal({
    const [date, setDate] = useState<Date | undefined>(new Date())
    const { mutate: createProject } = useCreateProject()
 
+
+   function reset() {
+      setPriority("medium");
+      setDate(new Date());
+   }
+
    function handleProjectSubmit(formData: FormData) {
       const name = formData.get("name") as string
       const teamId = formData.get("teamId") as string
@@ -238,7 +244,10 @@ export default function NewProjectModal({
       if (description) formPayload = { ...formPayload, description }
 
       createProject(formPayload, {
-         onSettled: () => onOpenChange(false)
+         onSettled: () => {
+            onOpenChange(false);
+            reset();
+         }
       })
    }
 
