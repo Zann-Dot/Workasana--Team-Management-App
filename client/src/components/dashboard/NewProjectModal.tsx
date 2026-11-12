@@ -158,8 +158,8 @@ function StyledDateInput({
             className="flex w-full justify-between font-normal text-muted-foreground"
             variant="outline"
          >
-            {String(date) !== String(new Date())
-               ? format(String(date), "dd MMM yyyy")
+            {date
+               ? format(date, "dd MMM yyyy")
                : "Select due date"}
             <CalendarBlankIcon
                opacity={open ? 0 : 100}
@@ -232,7 +232,7 @@ export default function NewProjectModal({
    onOpenChange,
 }: NewProjectModalProps) {
    const [priority, setPriority] = useState<"low" | "medium" | "high">("medium")
-   const [date, setDate] = useState<Date | undefined>(new Date())
+   const [date, setDate] = useState<Date | undefined>(undefined)
    const { mutate: createProject } = useCreateProject()
    const { data: TEAM_OPTIONS } = useTeams();
 
