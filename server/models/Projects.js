@@ -38,7 +38,7 @@ const projectSchema = new mongoose.Schema(
 );
 
 projectSchema.pre("save", async function () {
-    if (!this.dueDate) return;
+    if (this.dueDate) return;
     this.dueDate = format(this.dueOn, "MMM dd");
 });
 
