@@ -29,6 +29,8 @@ import { Calendar } from "../ui/calendar"
 import { format } from "date-fns"
 import { toast } from "../ui/toast"
 import { useCreateProject } from "@/hooks/useProjects"
+import { useTeams, type Teams } from "@/hooks/useTeams"
+import type { AxiosResponse } from "axios"
 
 interface NewProjectModalProps {
    open: boolean
@@ -54,9 +56,26 @@ interface PRIORITY_OPTIONS_TYPE {
    dot: string;
 }
 
-const TEAM_OPTIONS = ["Design", "Dev", "Marketing", "Finance", "Sales"]
+interface Status {
+   _id: string,
+   name: string
+}
 
-const STATUS_OPTIONS = ["In Progress", "Completed", "In Review"]
+
+const STATUS_OPTIONS: Status[] = [
+   {
+      _id: "inprogress",
+      name: "In Progress"
+   },
+   {
+      _id: "inreview",
+      name: "In Review"
+   },
+   {
+      _id: "completed",
+      name: "Completed"
+   }
+]
 
 const PRIORITY_OPTIONS: PRIORITY_OPTIONS_TYPE[] = [
    {
@@ -94,7 +113,7 @@ function StyledSelect({
    className,
    name,
 }: {
-   options: string[]
+   options: Status[] | Teams[] | undefined
    placeholder: string
    name: string
    className?: string
@@ -115,9 +134,9 @@ function StyledSelect({
             <option value="" disabled className="text-muted-foreground">
                {placeholder}
             </option>
-            {options.map((opt) => (
-               <option key={opt} value={opt.split(" ").join("").toLowerCase()}>
-                  {opt}
+            {options?.map((opt) => (
+               <option key={opt._id} value={opt._id}>
+                  {opt.name}
                </option>
             ))}
          </select>
@@ -221,7 +240,8 @@ export default function NewProjectModal({
    const [priority, setPriority] = useState<"low" | "medium" | "high">("medium")
    const [date, setDate] = useState<Date | undefined>(new Date())
    const { mutate: createProject } = useCreateProject()
-
+   const { data: TEAM_OPTIONS } = useTeams()
+   console.log(TEAM_OPTIONS);
 
    function reset() {
       setPriority("medium");
