@@ -1,6 +1,5 @@
-import React, {
+import {
    useState,
-   type ChangeEvent,
    type Dispatch,
    type SetStateAction,
 } from "react"
@@ -8,11 +7,9 @@ import {
    CalendarBlankIcon,
    CaretDownIcon,
    FolderSimplePlusIcon,
-   TextTIcon,
 } from "@phosphor-icons/react"
 import { cn } from "cn"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
    Dialog,
@@ -23,14 +20,11 @@ import {
    DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Calendar } from "../ui/calendar"
 import { format } from "date-fns"
-import { toast } from "../ui/toast"
 import { useCreateProject } from "@/hooks/useProjects"
 import { useTeams, type Teams } from "@/hooks/useTeams"
-import type { AxiosResponse } from "axios"
 
 interface NewProjectModalProps {
    open: boolean
@@ -240,8 +234,7 @@ export default function NewProjectModal({
    const [priority, setPriority] = useState<"low" | "medium" | "high">("medium")
    const [date, setDate] = useState<Date | undefined>(new Date())
    const { mutate: createProject } = useCreateProject()
-   const { data: TEAM_OPTIONS } = useTeams()
-   console.log(TEAM_OPTIONS);
+   const { data: TEAM_OPTIONS } = useTeams();
 
    function reset() {
       setPriority("medium");
