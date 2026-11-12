@@ -6,7 +6,7 @@ export interface Project {
     name: string,
     teamId: string,
     status: string
-    dueOn: string
+    dueOn: Date
     priority: string
     description?: string
 }

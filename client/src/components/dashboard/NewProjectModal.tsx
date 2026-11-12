@@ -35,7 +35,7 @@ interface ProjectFormType {
    name: string
    teamId: string
    status: "inprogress" | "inreview" | "completed"
-   dueOn: string
+   dueOn: Date
    priority: "low" | "medium" | "high"
    description?: string
 }
@@ -246,11 +246,12 @@ export default function NewProjectModal({
       const teamId = formData.get("teamId") as string
       const status = formData.get("status") as "inprogress" | "inreview" | "completed"
       const description = formData.get("description") as string
+      const dueOn = date as Date
       let formPayload: ProjectFormType = {
          name,
          teamId,
          status,
-         dueOn: String(date),
+         dueOn,
          priority,
       }
 
