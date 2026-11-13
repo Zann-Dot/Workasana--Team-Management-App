@@ -3,17 +3,17 @@ import { useQuery } from "@tanstack/react-query"
 import type { Users } from "./useUser"
 
 export interface Tasks {
-    _id: string
+    _id?: string
     name: string
     project: string
     team: string
-    owners: Users[]
+    owners: Users[] | string[]
     tags: string[]
-    timeToComplete: number
+    timeToComplete: number | string
     status: string
-    createdAt: string
-    updatedAt: string
     priority: string
+    createdAt?: string
+    updatedAt?: string
 }
 
 export interface TaskSummary {

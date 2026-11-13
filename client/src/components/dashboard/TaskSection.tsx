@@ -18,6 +18,7 @@ import {
    CardTitle,
 } from "@/components/ui/card"
 import { useGetTasks } from "@/hooks/useTasks"
+import NewTaskModal from "./NewTaskModal"
 
 export const TASKSS = [
    {
@@ -116,6 +117,7 @@ function PriorityDot({ priority }: { priority: string }) {
 }
 
 export default function TaskSection() {
+   const [isNewTaskOpen, setIsNewTaskOpen] = useState(false)
    const [taskFilter, setTaskFilter] = useState<TaskFilter>("All")
    const { data, isFetching, isLoading } = useGetTasks()
    const TASKS = data?.tasks
@@ -131,7 +133,9 @@ export default function TaskSection() {
    const FILTERS: TaskFilter[] = ["All", "In Progress", "Completed", "Todo"]
 
    return (
-      <Card>
+      <>
+         <NewTaskModal open={isNewTaskOpen} onOpenChange={setIsNewTaskOpen} />
+         <Card>
          <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3 border-b pb-4">
             <div>
                <div>
@@ -166,7 +170,12 @@ export default function TaskSection() {
                   View all
                   <ArrowUpRightIcon weight="bold" className="size-3" />
                </Button>
-               <Button size="sm" type="button" className="gap-1.5">
+               <Button
+                  size="sm"
+                  type="button"
+                  className="gap-1.5"
+                  onClick={() => setIsNewTaskOpen(true)}
+               >
                   <PlusIcon weight="bold" className="size-4" />
                   New Task
                </Button>
@@ -233,5 +242,6 @@ export default function TaskSection() {
             )}
          </CardContent>
       </Card>
+      </>
    )
 }
