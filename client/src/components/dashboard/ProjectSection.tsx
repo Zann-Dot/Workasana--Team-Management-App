@@ -24,49 +24,11 @@ import {
    AvatarGroupCount,
 } from "@/components/ui/avatar"
 import NewProjectModal from "./NewProjectModal"
+import { useProjects } from "@/hooks/useProjects"
+import { Skeleton } from "../ui/skeleton"
+import { Link } from "react-router"
 
-export const PROJECTS = [
-   {
-      id: 1,
-      name: "Workasana Redesign",
-      team: "Design",
-      progress: 72,
-      status: "In Progress",
-      dueDate: "Nov 15",
-      members: ["AJ", "SK", "LM"],
-      priority: "High",
-   },
-   {
-      id: 2,
-      name: "API Integration",
-      team: "Dev",
-      progress: 45,
-      status: "In Progress",
-      dueDate: "Nov 28",
-      members: ["RK", "PN"],
-      priority: "Medium",
-   },
-   {
-      id: 3,
-      name: "Q4 Marketing Campaign",
-      team: "Marketing",
-      progress: 90,
-      status: "In Review",
-      dueDate: "Nov 05",
-      members: ["TW", "AJ", "MR", "SL"],
-      priority: "High",
-   },
-   {
-      id: 4,
-      name: "Mobile App MVP",
-      team: "Dev",
-      progress: 20,
-      status: "In Progress",
-      dueDate: "Dec 10",
-      members: ["RK", "NV"],
-      priority: "Low",
-   },
-]
+const status = ["In Progress", "In Review", "Completed"]
 
 function StatusBadge({ status }: { status: string }) {
    const map: Record<string, string> = {
@@ -93,9 +55,9 @@ function StatusBadge({ status }: { status: string }) {
 
 function PriorityDot({ priority }: { priority: string }) {
    const colors: Record<string, string> = {
-      High: "bg-destructive",
-      Medium: "bg-amber-500",
-      Low: "bg-emerald-500",
+      high: "bg-destructive",
+      medium: "bg-amber-500",
+      low: "bg-emerald-500",
    }
    return (
       <span
@@ -107,26 +69,29 @@ function PriorityDot({ priority }: { priority: string }) {
 
 export default function ProjectSection() {
    const [modalOpen, setModalOpen] = useState(false)
-
+   const { data: PROJECTS, isFetching, isLoading } = useProjects()
+   const isProjectLoading = isFetching || isLoading
    return (
       <>
          <NewProjectModal open={modalOpen} onOpenChange={setModalOpen} />
          <Card>
             <CardHeader className="flex items-center justify-between border-b pb-4">
                <div>
-                  <CardTitle className="text-base">Active Projects</CardTitle>
+                  <CardTitle className="text-base text-nowrap">Active Projects</CardTitle>
                   <CardDescription>Your team's ongoing work</CardDescription>
                </div>
-               <div className="flex items-center gap-2">
-                  <Button
-                     variant="ghost"
-                     size="sm"
-                     type="button"
-                     className="gap-1 text-xs"
-                  >
-                     View all
-                     <ArrowUpRightIcon weight="bold" className="size-3" />
-                  </Button>
+               <div className="flex flex-wrap justify-end items-center gap-2">
+                  <Link to="/projects">
+                     <Button
+                        variant="ghost"
+                        size="sm"
+                        type="button"
+                        className="gap-1 text-xs"
+                     >
+                        View all
+                        <ArrowUpRightIcon weight="bold" className="size-3" />
+                     </Button>
+                  </Link>
                   <Button
                      size="sm"
                      type="button"
@@ -139,32 +104,78 @@ export default function ProjectSection() {
                </div>
             </CardHeader>
             <CardContent className="pt-4">
-               <div className="grid grid-cols-4 space-x-4">
-                  {PROJECTS.map((project) => (
-                     <div
-                        key={project.id}
-                        className="group flex flex-col gap-3 rounded-lg border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
-                     >
-                        <div className="flex flex-col flex-wrap items-start justify-between gap-2">
-                           <div className="flex items-center gap-2">
-                              <PriorityDot priority={project.priority} />
-                              <span className="text-sm font-medium">{project.name}</span>
-                              <Badge variant="secondary" className="text-xs">
-                                 {project.team}
-                              </Badge>
-                           </div>
-                           <div className="flex items-center gap-2">
-                              <StatusBadge status={project.status} />
-                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                 <CalendarBlankIcon
-                                    weight="duotone"
-                                    className="size-3.5"
-                                 />
-                                 {project.dueDate}
-                              </span>
+               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 space-4">
+                  {isLoading
+                     ? Array.from({ length: 4 }, (_, i) => (
+                        <div
+                           key={i}
+                           className="group flex flex-col gap-3 rounded-lg border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
+                        >
+                           <div className="flex flex-col flex-wrap items-start justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                 <Skeleton className="h-4 w-40" />
+                                 <Skeleton className="h-4 w-10" />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                 <Skeleton className="h-4 w-20" />
+                                 <Skeleton className="h-4 w-10" />
+                              </div>
                            </div>
                         </div>
-                        <div className="flex items-center gap-3">
+                     ))
+                     : PROJECTS?.map((project) => (
+                        <div
+                           key={project._id}
+                           className="group flex flex-col gap-3 rounded-lg border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
+                        >
+                           <div className="flex flex-col flex-wrap items-start justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                 {isProjectLoading ? (
+                                    <>
+                                       <Skeleton className="h-4 w-40" />
+                                       <Skeleton className="h-4 w-10" />
+                                    </>
+                                 ) : (
+                                    <>
+                                       <PriorityDot priority={project.priority} />
+                                       <span className="text-sm font-medium">
+                                          {project.name}
+                                       </span>
+                                       <Badge variant="secondary" className="text-xs">
+                                          {/* {project.teamId} */}
+                                       </Badge>
+                                    </>
+                                 )}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                 {isProjectLoading ? (
+                                    <>
+                                       <Skeleton className="h-4 w-20" />
+                                       <Skeleton className="h-4 w-10" />
+                                    </>
+                                 ) : (
+                                    <>
+                                       <StatusBadge
+                                          status={
+                                             status.find(
+                                                (s) =>
+                                                   s.split(" ").join("").toLowerCase() ===
+                                                   project.status
+                                             ) as string
+                                          }
+                                       />
+                                       <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                          <CalendarBlankIcon
+                                             weight="duotone"
+                                             className="size-3.5"
+                                          />
+                                          {project.dueDate}
+                                       </span>
+                                    </>
+                                 )}
+                              </div>
+                           </div>
+                           {/* <div className="flex items-center gap-3">
                            <AvatarGroup>
                               {project.members.slice(0, 3).map((m) => (
                                  <Avatar key={m} size="sm">
@@ -179,9 +190,9 @@ export default function ProjectSection() {
                                  </AvatarGroupCount>
                               )}
                            </AvatarGroup>
+                        </div> */}
                         </div>
-                     </div>
-                  ))}
+                     ))}
                </div>
             </CardContent>
          </Card>
