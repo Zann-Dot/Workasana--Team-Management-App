@@ -17,8 +17,9 @@ import {
    CardHeader,
    CardTitle,
 } from "@/components/ui/card"
+import { useGetTasks } from "@/hooks/useTasks"
 
-export const TASKS = [
+export const TASKSS = [
    {
       id: 1,
       title: "Finalize login page design",
@@ -116,9 +117,16 @@ function PriorityDot({ priority }: { priority: string }) {
 
 export default function TaskSection() {
    const [taskFilter, setTaskFilter] = useState<TaskFilter>("All")
+   const { data, isFetching, isLoading } = useGetTasks()
+   const TASKS = data?.tasks
+   const isTasksLoading = isLoading || isFetching
 
    const filteredTasks =
-      taskFilter === "All" ? TASKS : TASKS.filter((t) => t.status === taskFilter)
+      taskFilter === "All"
+         ? TASKS
+         : TASKS?.filter(
+            (t) => t.status === taskFilter.split(" ").join("").toLowerCase()
+         )
 
    const FILTERS: TaskFilter[] = ["All", "In Progress", "Completed", "Todo"]
 
@@ -128,9 +136,11 @@ export default function TaskSection() {
             <div>
                <div>
                   <CardTitle className="text-base">My Tasks</CardTitle>
-                  <CardDescription>Tasks assigned to you across all projects</CardDescription>
+                  <CardDescription>
+                     Tasks assigned to you across all projects
+                  </CardDescription>
                </div>
-               <div className="flex items-center gap-1.5 flex-wrap mt-2">
+               <div className="mt-2 flex flex-wrap items-center gap-1.5">
                   {FILTERS.map((f) => (
                      <button
                         key={f}
@@ -147,7 +157,12 @@ export default function TaskSection() {
                </div>
             </div>
             <div className="flex items-center gap-2">
-               <Button variant="ghost" size="sm" type="button" className="gap-1 text-xs">
+               <Button
+                  variant="ghost"
+                  size="sm"
+                  type="button"
+                  className="gap-1 text-xs"
+               >
                   View all
                   <ArrowUpRightIcon weight="bold" className="size-3" />
                </Button>
@@ -158,49 +173,59 @@ export default function TaskSection() {
             </div>
          </CardHeader>
          <CardContent className="pt-4">
-            {filteredTasks.length === 0 ? (
+            {filteredTasks?.length === 0 ? (
                <div className="flex flex-col items-center gap-2 py-10 text-center text-muted-foreground">
-                  <CheckCircleIcon weight="duotone" className="size-10 text-primary/40" />
+                  <CheckCircleIcon
+                     weight="duotone"
+                     className="size-10 text-primary/40"
+                  />
                   <p className="text-sm font-medium">All clear — no tasks here!</p>
                </div>
             ) : (
                <div className="divide-y">
-                  {filteredTasks.map((task) => (
+                  {filteredTasks?.map((task) => (
                      <div
-                        key={task.id}
+                        key={task._id}
                         className="flex flex-wrap items-center gap-3 py-3 first:pt-0 last:pb-0"
                      >
                         <div
-                           className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${task.status === "Completed"
+                           className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${task.status === "completed"
                               ? "border-emerald-500 bg-emerald-500 text-white"
                               : "border-muted-foreground/40"
                               }`}
                         >
-                           {task.status === "Completed" && (
+                           {task.status === "completed" && (
                               <CheckCircleIcon weight="fill" className="size-3" />
                            )}
                         </div>
 
                         <span
-                           className={`flex-1 text-sm font-medium ${task.status === "Completed"
-                              ? "line-through text-muted-foreground"
+                           className={`flex-1 text-sm font-medium ${task.status === "completed"
+                              ? "text-muted-foreground line-through"
                               : ""
                               }`}
                         >
-                           {task.title}
+                           {task.name}
                         </span>
 
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex flex-wrap items-center gap-2">
                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
                               <TagIcon weight="duotone" className="size-3.5" />
-                              {task.tag}
+                              {/* {task.tag} */}
                            </span>
                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
                               <CalendarBlankIcon weight="duotone" className="size-3.5" />
-                              {task.dueDate}
+                              {/* {task.dueDate} */}
                            </span>
                            <PriorityDot priority={task.priority} />
-                           <StatusBadge status={task.status} />
+                           <StatusBadge
+                              status={
+                                 FILTERS.find(
+                                    (s) =>
+                                       s.split(" ").join("").toLowerCase() === task.status
+                                 ) as string
+                              }
+                           />
                         </div>
                      </div>
                   ))}

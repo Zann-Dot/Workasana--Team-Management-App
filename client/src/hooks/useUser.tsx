@@ -11,6 +11,15 @@ export type Signup = {
     password: string
 }
 
+export interface Users {
+    _id: string,
+    name: string,
+    email: string,
+    password: string,
+    createdAt: string,
+    updatedAt: string,
+}
+
 export function useLoginAuth() {
     const queryClient = useQueryClient()
     return useMutation({
