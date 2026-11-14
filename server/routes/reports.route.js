@@ -205,7 +205,7 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
                   $ifNull: [{ $arrayElemAt: ["$inProgressSummary.count", 0] }, 0],
                },
                overdue: {
-                  $ifNull: [{ $arrayElemAt: ["$overdueSummary", 0] }, 0],
+                  $ifNull: [{ $arrayElemAt: ["$overdueSummary.overdue", 0] }, 0],
                },
                projectsThisMonth: {
                   $ifNull: [
