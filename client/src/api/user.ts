@@ -13,4 +13,4 @@ export async function signup(payload: Signup) {
     return await api.post("/api/auth/signup", payload)
 }
 
-export const getUsers = async (): Promise<Users> => await api.get("/api/users")
+export const getUsers = async (): Promise<Users[]> => await api.get("/api/users")
