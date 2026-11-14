@@ -18,7 +18,11 @@ export interface Projects {
     name: string
     priority: string
     status: string
-    teamId: string
+    teamId: {
+        _id: string,
+        name: string,
+        updatedAt: string
+    }
     updatedAt: string
     __v: number
     _id: string
@@ -47,9 +51,9 @@ export function useCreateProject() {
     })
 }
 
-export function useProjects() {
+export function useProjects(queryParams: string = "") {
     return useQuery<Projects[]>({
-        queryFn: fetchProjects,
-        queryKey: ["projects"],
+        queryFn: () => fetchProjects(queryParams),
+        queryKey: ["projects", { queryParams }],
     })
 }
