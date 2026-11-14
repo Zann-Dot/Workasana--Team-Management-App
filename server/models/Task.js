@@ -28,7 +28,7 @@ const taskSchema = new Schema(
             enum: ["todo", "inprogress", "completed", "blocked"],
             default: "todo",
         },
-        dueDate: { type: string },
+        dueDate: { type: String },
     },
     { timestamps: true },
 );
