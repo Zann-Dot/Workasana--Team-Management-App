@@ -11,6 +11,7 @@ export interface Tasks {
     owners: Users[] | string[]
     tags: string[]
     timeToComplete: number | string
+    dueDate?: string
     status: string
     priority: string
     createdAt?: string
