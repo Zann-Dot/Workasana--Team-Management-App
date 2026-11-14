@@ -44,7 +44,7 @@ projectRouter.post("/projects", validatePayload, async (req, res) => {
 
 projectRouter.get("/projects", async (req, res) => {
     try {
-        const projects = await Projects.find({}).lean();
+        const projects = await Projects.find({}).populate("teamId").lean();
         if (!projects) return res.status(404).json({ error: "No projects found" });
         res.json(projects);
     } catch (error) {

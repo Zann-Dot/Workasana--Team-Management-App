@@ -80,6 +80,17 @@ userRouter.get("/auth/user", authenticateToken, async (req, res) => {
    }
 });
 
+userRouter.get("/users", async (req, res) => {
+   try {
+      const users = await Users.find({}).lean();
+      if (!users || users.length === 0)
+         return res.status(404).json({ error: "Users not found" })
+      res.json(users);
+   } catch (error) {
+      res.status(500).json({ error: error.message });
+   }
+});
+
 userRouter.put(
    "/auth/reset-password",
    validatePayload,

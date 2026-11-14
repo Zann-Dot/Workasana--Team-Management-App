@@ -64,6 +64,7 @@ taskRouter.get("/tasks", filterQuery, async (req, res) => {
             .sort(sort)
             .skip((page - 1) * limit)
             .limit(limit)
+            .populate(["owners", "team", "project"])
             .lean()
       ]);
 
