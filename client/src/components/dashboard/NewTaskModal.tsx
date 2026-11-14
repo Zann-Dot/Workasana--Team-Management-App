@@ -29,22 +29,10 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import OwnersMultiSelect, { DEMO_OWNERS } from "./task/OwnersMultiSelect"
 import TagsMultiSelect from "./task/TagsMultiSelect"
-import type { Tasks } from "@/hooks/useTasks"
-
-const DEMO_PROJECTS = [
-   { id: "proj-1", name: "Workasana Redesign" },
-   { id: "proj-2", name: "API Integration" },
-   { id: "proj-3", name: "Q4 Marketing Campaign" },
-   { id: "proj-4", name: "Mobile App MVP" },
-   { id: "proj-5", name: "Design System 2.0" },
-]
-
-const DEMO_TEAMS = [
-   { id: "team-sales", name: "Sales" },
-   { id: "team-marketing", name: "Marketing" },
-   { id: "team-dev", name: "Development" },
-   { id: "team-finance", name: "Finance" },
-]
+import { useCreateTask, type Tasks } from "@/hooks/useTasks"
+import { Toaster } from "../ui/toast"
+import { useProjects } from "@/hooks/useProjects"
+import { useTeams } from "@/hooks/useTeams"
 
 const PRIORITY_OPTIONS = [
    {
@@ -102,14 +90,19 @@ interface NewTaskModalProps {
 
 
 export default function NewTaskModal({ open, onOpenChange }: NewTaskModalProps) {
+   const { mutate: createTask, isSuccess } = useCreateTask();
+   const { data: teams } = useTeams()
+   const { data: projects } = useProjects();
+
    const [taskName, setTaskName] = useState("")
-   const [projectId, setProjectId] = useState(DEMO_PROJECTS[0].id)
-   const [teamId, setTeamId] = useState(DEMO_TEAMS[2].id)
+   const [projectId, setProjectId] = useState<string | null>(null)
+   const [teamId, setTeamId] = useState<string | null>(null)
    const [owners, setOwners] = useState<string[]>([])
    const [priority, setPriority] = useState("medium")
    const [status, setStatus] = useState("todo")
    const [timeToComplete, setTimeToComplete] = useState<number | string>(3)
    const [selectedTags, setSelectedTags] = useState<string[]>(["Feature", "Dev"])
+
 
    const handleClose = () => {
       onOpenChange(false)
@@ -117,20 +110,20 @@ export default function NewTaskModal({ open, onOpenChange }: NewTaskModalProps) 
 
    function reset() {
       setTaskName("");
-      setProjectId(DEMO_PROJECTS[0].id)
-      setTeamId(DEMO_TEAMS[2].id)
+      setProjectId(null)
+      setTeamId(null)
       setOwners([])
       setPriority("medium")
       setStatus("todo")
       setTimeToComplete(3)
-      setSelectedTags([])
+      setSelectedTags(["Feature", "Dev"])
    }
 
    function handleTaskSubmit() {
       const taskPayload: Tasks = {
          name: taskName,
-         project: projectId,
-         team: teamId,
+         project: projectId || "",
+         team: teamId || "",
          owners,
          priority,
          status,
@@ -138,7 +131,10 @@ export default function NewTaskModal({ open, onOpenChange }: NewTaskModalProps) 
          tags: selectedTags
       }
 
-      reset()
+      createTask(taskPayload, {
+         onSuccess: () => onOpenChange(false),
+         onSettled: () => reset()
+      })
    }
 
    return (
@@ -147,6 +143,7 @@ export default function NewTaskModal({ open, onOpenChange }: NewTaskModalProps) 
             className="max-h-[92vh] overflow-y-auto scrollbar-none sm:max-w-xl"
             showCloseButton
          >
+            {!isSuccess && <Toaster />}
             <div className="flex flex-col gap-6">
                <DialogHeader>
                   <div className="flex items-center gap-3">
@@ -200,7 +197,7 @@ export default function NewTaskModal({ open, onOpenChange }: NewTaskModalProps) 
                            />
                            <select
                               id="task-project"
-                              value={projectId}
+                              value={projectId ?? ""}
                               required
                               onChange={(e) => setProjectId(e.target.value)}
                               className={cn(
@@ -209,10 +206,11 @@ export default function NewTaskModal({ open, onOpenChange }: NewTaskModalProps) 
                                  "text-foreground dark:bg-input/30"
                               )}
                            >
-                              {DEMO_PROJECTS.map((proj) => (
+                              <option value="" hidden>Select project</option>
+                              {projects?.map((proj) => (
                                  <option
-                                    key={proj.id}
-                                    value={proj.id}
+                                    key={proj._id}
+                                    value={proj._id}
                                     className="bg-popover text-foreground"
                                  >
                                     {proj.name}
@@ -235,7 +233,7 @@ export default function NewTaskModal({ open, onOpenChange }: NewTaskModalProps) 
                            />
                            <select
                               id="task-team"
-                              value={teamId}
+                              value={teamId ?? ""}
                               required
                               onChange={(e) => setTeamId(e.target.value)}
                               className={cn(
@@ -244,10 +242,11 @@ export default function NewTaskModal({ open, onOpenChange }: NewTaskModalProps) 
                                  "text-foreground dark:bg-input/30"
                               )}
                            >
-                              {DEMO_TEAMS.map((team) => (
+                              <option value="" hidden>Select team</option>
+                              {teams?.map((team) => (
                                  <option
-                                    key={team.id}
-                                    value={team.id}
+                                    key={team._id}
+                                    value={team._id}
                                     className="bg-popover text-foreground"
                                  >
                                     {team.name}
