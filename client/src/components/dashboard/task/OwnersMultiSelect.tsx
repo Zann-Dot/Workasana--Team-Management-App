@@ -8,6 +8,7 @@ import {
 import { cn } from "cn"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useGetUsers } from "@/hooks/useUser"
 
 export interface OwnerMember {
    id: string
@@ -31,14 +32,14 @@ export interface OwnersMultiSelectProps {
    members?: OwnerMember[]
 }
 
-/** Multi-select dropdown UI for Team Members / Owners */
 export default function OwnersMultiSelect({
    selected,
    onChange,
    members = DEMO_OWNERS,
 }: OwnersMultiSelectProps) {
    const [openDropdown, setOpenDropdown] = useState(false)
-
+   const { data: users } = useGetUsers();
+   console.log(users)
    const toggleMember = (id: string) => {
       if (selected.includes(id)) {
          onChange(selected.filter((item) => item !== id))
@@ -51,7 +52,6 @@ export default function OwnersMultiSelect({
 
    return (
       <div className="relative">
-         {/* Trigger Button */}
          <button
             type="button"
             onClick={() => setOpenDropdown((prev) => !prev)}
@@ -111,7 +111,6 @@ export default function OwnersMultiSelect({
             />
          </button>
 
-         {/* Dropdown Popover */}
          {openDropdown && (
             <>
                <div

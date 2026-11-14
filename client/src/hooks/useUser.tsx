@@ -1,5 +1,5 @@
-import { loginAuth, resetPassword, signup } from "@/api/user"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { getUsers, loginAuth, resetPassword, signup } from "@/api/user"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 export type Login = {
     email: string
     password: string
@@ -47,8 +47,15 @@ export function useSignup() {
     return useMutation({
         mutationFn: signup,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["user"] })
+            queryClient.invalidateQueries({ queryKey: ["users"] })
         },
         onError: (err) => console.error(err.message),
+    })
+}
+
+export function useGetUsers() {
+    return useQuery({
+        queryFn: getUsers,
+        queryKey: ["users"]
     })
 }

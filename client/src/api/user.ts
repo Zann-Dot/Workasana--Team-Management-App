@@ -1,4 +1,4 @@
-import type { Login, Signup } from "@/hooks/useUser"
+import type { Login, Signup, Users } from "@/hooks/useUser"
 import api from "./axiosClient"
 
 export async function loginAuth(payload: Login) {
@@ -12,3 +12,5 @@ export async function resetPassword(passwordConfig: Login) {
 export async function signup(payload: Signup) {
     return await api.post("/api/auth/signup", payload)
 }
+
+export const getUsers = async (): Promise<Users> => await api.get("/api/users")
