@@ -1,7 +1,16 @@
 function filterQuery(req, res, next) {
     try {
-        const { team, owner, tags, project, status } = req.query;
+        const { team, owner, tags, project, status, search } = req.query;
         let query = {};
+        if (search) {
+            const searchTerm = search.trim();
+            const searchRegex = { $regex: searchTerm, $option: "i" };
+            query.$or = [
+                { name: searchRegex },
+                { "project.name": searchRegex },
+                { "team.name": searchRegex }
+            ]
+        }
         if (team) query.team = team.trim();
         if (owner) query.owners = { $in: owner.trim() };
         if (project) query.project = owner.trim();

@@ -49,23 +49,28 @@ taskRouter.post(
 
 taskRouter.get("/tasks", filterQuery, async (req, res) => {
    try {
-      const query = req.filterQueries;
-      const { timeToComplete } = req.query;
+      const filters = req.filterQueries;
+      const { timeToComplete, priority } = req.query;
       const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
+      const limit = parseInt(req.query.limit);
       const sort = { createdAt: -1 };
-      if (timeToComplete) sort = { timeToComplete };
-      console.log(query);
+      if (timeToComplete && (filters.status !== "completed" || !filters.status)) {
+         if (!filters.status) filters.status = { $ne: "completed" };
+         sort = { timeToComplete };
+      }
 
+      if (priority) {
+         sort = { priorityWeight: priority }
+      }
 
       const [totalTasks, tasks] = await Promise.all([
-         Tasks.countDocuments(),
-         Tasks.find(query)
+         Tasks.countDocuments(filters),
+         Tasks.find(filters)
             .sort(sort)
             .skip((page - 1) * limit)
             .limit(limit)
             .populate(["owners", "team", "project"])
-            .lean()
+            .lean(),
       ]);
 
       if (!tasks) return res.status(404).json({ error: "No tasks found." });
@@ -93,7 +98,7 @@ taskRouter.delete("/tasks", async (req, res) => {
       if (deletedTasks.deletedCount === 0)
          return res.status(404).json({ error: "No task deleted" });
 
-      const message = `${deletedTasks.deletedCount} ${deletedTasks.deletedCount === 1 ? "task" : "tasks"} deleted successfully.`
+      const message = `${deletedTasks.deletedCount} ${deletedTasks.deletedCount === 1 ? "task" : "tasks"} deleted successfully.`;
       res.json({
          success: true,
          message,
@@ -102,6 +107,6 @@ taskRouter.delete("/tasks", async (req, res) => {
    } catch (error) {
       res.status(500).json({ error: error.message });
    }
-})
+});
 
 export default taskRouter;
