@@ -18,17 +18,17 @@ export interface Tasks {
     updatedAt?: string
 }
 
-export interface TaskSummary {
+export interface TaskResponse {
     currentPage: number
     tasks: Tasks[]
     totalPages: number
     totalTasks: number
 }
 
-export function useGetTasks() {
-    return useQuery<TaskSummary>({
-        queryFn: fetchTasks,
-        queryKey: ["tasks"],
+export function useGetTasks(queryParams: string = "") {
+    return useQuery<TaskResponse>({
+        queryFn: () => fetchTasks(queryParams),
+        queryKey: ["tasks", { queryParams }],
     })
 }
 

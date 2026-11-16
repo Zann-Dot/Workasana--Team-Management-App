@@ -71,7 +71,7 @@ function PriorityDot({ priority }: { priority: string }) {
 export default function ProjectSection() {
    const [modalOpen, setModalOpen] = useState(false)
    const { data, isFetching, isLoading, isError } = useProjects("page=1&limit=4")
-   const PROJECTS = data?.projects.filter(p => p.status !== "completed")
+   const PROJECTS = data?.projects.filter((p) => p.status !== "completed")
    const isProjectLoading = isFetching || isLoading
 
    return (
@@ -80,10 +80,12 @@ export default function ProjectSection() {
          <Card>
             <CardHeader className="flex items-center justify-between border-b pb-4">
                <div>
-                  <CardTitle className="text-base text-nowrap">Active Projects</CardTitle>
+                  <CardTitle className="text-base text-nowrap">
+                     Active Projects
+                  </CardTitle>
                   <CardDescription>Your team's ongoing work</CardDescription>
                </div>
-               <div className="flex flex-wrap justify-end items-center gap-2">
+               <div className="flex flex-wrap items-center justify-end gap-2">
                   <Link to="/projects">
                      <Button
                         variant="ghost"
@@ -107,89 +109,102 @@ export default function ProjectSection() {
                </div>
             </CardHeader>
             <CardContent className="pt-4">
-               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 space-4">
-                  {isLoading
-                     ? Array.from({ length: 4 }, (_, i) => (
-                        <div
-                           key={i}
-                           className="group flex flex-col gap-3 rounded-lg border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
-                        >
-                           <div className="flex flex-col flex-wrap items-start justify-between gap-2">
-                              <div className="flex items-center gap-2">
-                                 <Skeleton className="h-4 w-40" />
-                                 <Skeleton className="h-4 w-10" />
-                              </div>
-                              <div className="flex items-center gap-2">
-                                 <Skeleton className="h-4 w-20" />
-                                 <Skeleton className="h-4 w-10" />
-                              </div>
+               {isLoading ? (
+                  Array.from({ length: 4 }, (_, i) => (
+                     <div
+                        key={i}
+                        className="group flex flex-col gap-3 rounded-lg border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
+                     >
+                        <div className="flex flex-col flex-wrap items-start justify-between gap-2">
+                           <div className="flex items-center gap-2">
+                              <Skeleton className="h-4 w-40" />
+                              <Skeleton className="h-4 w-10" />
+                           </div>
+                           <div className="flex items-center gap-2">
+                              <Skeleton className="h-4 w-20" />
+                              <Skeleton className="h-4 w-10" />
                            </div>
                         </div>
-                     ))
-                     : <>
-                        {isError && (
-                           <div className="flex flex-col items-center gap-2 py-10 text-center text-muted-foreground">
-                              <WarningCircleIcon
-                                 weight="duotone"
-                                 className="size-10 text-primary/40"
-                              />
-                              <p className="text-sm font-medium">Something went wrong!</p>
-                           </div>
-                        )}
+                     </div>
+                  ))
+               ) : (
+                  <>
+                     {isError && (
+                        <div className="flex flex-col items-center gap-2 py-10 text-center text-muted-foreground">
+                           <WarningCircleIcon
+                              weight="duotone"
+                              className="size-10 text-primary/40"
+                           />
+                           <p className="text-sm font-medium">Something went wrong!</p>
+                        </div>
+                     )}
 
-                        {PROJECTS?.map((project) => (
-                           <div
-                              key={project._id}
-                              className="group flex flex-col gap-3 rounded-lg border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
-                           >
-                              <div className="flex flex-col flex-wrap items-start justify-between gap-2">
-                                 <div className="flex items-center gap-2">
-                                    {isProjectLoading ? (
-                                       <>
-                                          <Skeleton className="h-4 w-40" />
-                                          <Skeleton className="h-4 w-10" />
-                                       </>
-                                    ) : (
-                                       <>
-                                          <PriorityDot priority={project.priority} />
-                                          <span className="text-sm font-medium">
-                                             {project.name}
-                                          </span>
-                                          <Badge variant="secondary" className="text-xs">
-                                             {project.teamId.name}
-                                          </Badge>
-                                       </>
-                                    )}
-                                 </div>
-                                 <div className="flex items-center gap-2">
-                                    {isProjectLoading ? (
-                                       <>
-                                          <Skeleton className="h-4 w-20" />
-                                          <Skeleton className="h-4 w-10" />
-                                       </>
-                                    ) : (
-                                       <>
-                                          <StatusBadge
-                                             status={
-                                                status.find(
-                                                   (s) =>
-                                                      s.split(" ").join("").toLowerCase() ===
-                                                      project.status
-                                                ) as string
-                                             }
-                                          />
-                                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                             <CalendarBlankIcon
-                                                weight="duotone"
-                                                className="size-3.5"
-                                             />
-                                             {project.dueDate}
-                                          </span>
-                                       </>
-                                    )}
-                                 </div>
-                              </div>
-                              {/* <div className="flex items-center gap-3">
+                     {PROJECTS?.length === 0 ? (
+                        <div className="flex flex-col items-center gap-2 py-10 text-center text-muted-foreground">
+                           <CheckCircleIcon
+                              weight="duotone"
+                              className="size-10 text-primary/40"
+                           />
+                           <p className="text-sm font-medium">
+                              All clear — no projects here!
+                           </p>
+                        </div>
+                     ) : (
+                        <div className="space-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                           <div className="divide-y">
+                              {PROJECTS?.map((project) => (
+                                 <div
+                                    key={project._id}
+                                    className="group flex flex-col gap-3 rounded-lg border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
+                                 >
+                                    <div className="flex flex-col flex-wrap items-start justify-between gap-2">
+                                       <div className="flex items-center gap-2">
+                                          {isProjectLoading ? (
+                                             <>
+                                                <Skeleton className="h-4 w-40" />
+                                                <Skeleton className="h-4 w-10" />
+                                             </>
+                                          ) : (
+                                             <>
+                                                <PriorityDot priority={project.priority} />
+                                                <span className="text-sm font-medium">
+                                                   {project.name}
+                                                </span>
+                                                <Badge variant="secondary" className="text-xs">
+                                                   {project.teamId.name}
+                                                </Badge>
+                                             </>
+                                          )}
+                                       </div>
+                                       <div className="flex items-center gap-2">
+                                          {isProjectLoading ? (
+                                             <>
+                                                <Skeleton className="h-4 w-20" />
+                                                <Skeleton className="h-4 w-10" />
+                                             </>
+                                          ) : (
+                                             <>
+                                                <StatusBadge
+                                                   status={
+                                                      status.find(
+                                                         (s) =>
+                                                            s.split(" ").join("").toLowerCase() ===
+                                                            project.status
+                                                      ) as string
+                                                   }
+                                                />
+                                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                   <CalendarBlankIcon
+                                                      weight="duotone"
+                                                      className="size-3.5"
+                                                   />
+                                                   {project.dueDate}
+                                                </span>
+                                             </>
+                                          )}
+                                       </div>
+                                    </div>
+                                    {/* <div className="flex items-center gap-3">
                            <AvatarGroup>
                               {project.members.slice(0, 3).map((m) => (
                                  <Avatar key={m} size="sm">
@@ -205,10 +220,13 @@ export default function ProjectSection() {
                               )}
                            </AvatarGroup>
                         </div> */}
+                                 </div>
+                              ))}
                            </div>
-                        ))}
-                     </>}
-               </div>
+                        </div>
+                     )}
+                  </>
+               )}
             </CardContent>
          </Card>
       </>

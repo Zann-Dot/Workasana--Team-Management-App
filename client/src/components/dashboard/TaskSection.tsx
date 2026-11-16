@@ -65,7 +65,7 @@ function PriorityDot({ priority }: { priority: string }) {
 export default function TaskSection() {
    const [isNewTaskOpen, setIsNewTaskOpen] = useState(false)
    const [taskFilter, setTaskFilter] = useState<TaskFilter>("All")
-   const { data, isFetching, isLoading, isError } = useGetTasks()
+   const { data, isFetching, isLoading, isError } = useGetTasks("page=1&limit=4")
    const TASKS = data?.tasks
    const isTasksLoading = isLoading || isFetching
 
