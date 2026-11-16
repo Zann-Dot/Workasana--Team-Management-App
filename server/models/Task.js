@@ -31,13 +31,14 @@ const taskSchema = new Schema(
         },
         dueDate: { type: String },
         priority: {
-            typr: String,
+            type: String,
             enum: ["low", "medium", "high"],
             default: "medium",
             required: true
         },
         priorityWeight: {
             type: Number,
+            default: 2
         }
     },
     { timestamps: true },
