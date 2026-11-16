@@ -41,6 +41,7 @@ export function useCreateProject() {
         mutationFn: postProject,
         onSuccess: (data: any) => {
             queryClient.invalidateQueries({ queryKey: ["projects"] })
+            queryClient.invalidateQueries({ queryKey: ["dashboardStats"] })
             toast.add({
                 title: data.message,
                 id: "success",
@@ -61,6 +62,6 @@ export function useCreateProject() {
 export function useProjects(queryParams: string = "") {
     return useQuery<ProjectResponse>({
         queryFn: () => fetchProjects(queryParams),
-        queryKey: ["projects", { queryParams }, "dashboardStats"],
+        queryKey: ["projects", { queryParams }],
     })
 }

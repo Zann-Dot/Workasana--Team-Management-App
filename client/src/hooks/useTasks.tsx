@@ -28,7 +28,7 @@ export interface TaskResponse {
 export function useGetTasks(queryParams: string = "") {
     return useQuery<TaskResponse>({
         queryFn: () => fetchTasks(queryParams),
-        queryKey: ["tasks", { queryParams }, "dashboardStats"],
+        queryKey: ["tasks", { queryParams }],
     })
 }
 
@@ -44,6 +44,7 @@ export function useCreateTask() {
                 type: "success"
             })
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
+            queryClient.invalidateQueries({ queryKey: ["dashboardStats"] });
         },
         onError: (error) => {
             console.error(error.message)
