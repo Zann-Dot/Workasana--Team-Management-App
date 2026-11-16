@@ -48,7 +48,7 @@ taskSchema.pre("findOneAndUpdate", async function () {
     const priority = update.priority || (update.$set && update.$set.priority);
 
     if (priority) {
-        const weight = { High: 1, Medium: 2, Low: 3 };
+        const weight = { high: 1, medium: 2, low: 3 };
         const calculateWeight = weight[priority] || 2;
         if (!update.$set) {
             update.$set = {};
@@ -71,7 +71,7 @@ taskSchema.pre("save", async function () {
     );
     this.dueDate = format(dueDate, "MMM dd")
 
-    const weight = { HIGH: 1, MEDIUM: 2, LOW: 3 };
+    const weight = { high: 1, medium: 2, low: 3 };
     this.priorityWeight = weight[this.priority] || 2;
 });
 
