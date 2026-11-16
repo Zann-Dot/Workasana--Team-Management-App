@@ -61,6 +61,6 @@ export function useCreateProject() {
 export function useProjects(queryParams: string = "") {
     return useQuery<ProjectResponse>({
         queryFn: () => fetchProjects(queryParams),
-        queryKey: ["projects", { queryParams }],
+        queryKey: ["projects", { queryParams }, "dashboardStats"],
     })
 }

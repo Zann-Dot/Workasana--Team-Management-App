@@ -28,7 +28,7 @@ export interface TaskResponse {
 export function useGetTasks(queryParams: string = "") {
     return useQuery<TaskResponse>({
         queryFn: () => fetchTasks(queryParams),
-        queryKey: ["tasks", { queryParams }],
+        queryKey: ["tasks", { queryParams }, "dashboardStats"],
     })
 }
 

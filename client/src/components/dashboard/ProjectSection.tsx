@@ -70,8 +70,8 @@ function PriorityDot({ priority }: { priority: string }) {
 
 export default function ProjectSection() {
    const [modalOpen, setModalOpen] = useState(false)
-   const { data, isFetching, isLoading, isError } = useProjects("page=1&limit=4")
-   const PROJECTS = data?.projects.filter((p) => p.status !== "completed")
+   const { data, isFetching, isLoading, isError } = useProjects("page=1&limit=4&view=dashboard")
+   const PROJECTS = data?.projects
    const isProjectLoading = isFetching || isLoading
 
    return (
@@ -151,12 +151,12 @@ export default function ProjectSection() {
                         </div>
                      ) : (
                         <div className="space-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-                           <div className="divide-y">
-                              {PROJECTS?.map((project) => (
-                                 <div
-                                    key={project._id}
-                                    className="group flex flex-col gap-3 rounded-lg border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
-                                 >
+                           {PROJECTS?.map((project) => (
+                              <div
+                                 key={project._id}
+                                 className="group flex flex-col gap-3 rounded-lg border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
+                              >
+                                 <div className="divide-y">
                                     <div className="flex flex-col flex-wrap items-start justify-between gap-2">
                                        <div className="flex items-center gap-2">
                                           {isProjectLoading ? (
@@ -221,8 +221,8 @@ export default function ProjectSection() {
                            </AvatarGroup>
                         </div> */}
                                  </div>
-                              ))}
-                           </div>
+                              </div>
+                           ))}
                         </div>
                      )}
                   </>
