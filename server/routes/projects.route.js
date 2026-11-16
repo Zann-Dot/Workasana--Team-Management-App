@@ -45,7 +45,7 @@ projectRouter.post("/projects", validatePayload, async (req, res) => {
 projectRouter.get("/projects", async (req, res) => {
     try {
         const query = {};
-        const { status, priority, dueDate, search } = req.query
+        const { status, priority, dueDate, search, view } = req.query
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit)
         const sort = { createdAt: -1 };
@@ -56,6 +56,7 @@ projectRouter.get("/projects", async (req, res) => {
             query.name = searchRegex
         }
 
+        if (view) query.status = { $ne: "completed" }
         if (status) query.status = status.trim().toLowerCase();
         if (priority) query.priority = priority.trim().toLowerCase();
         if (dueDate && (query.status !== "completed" || !query.status)) {
