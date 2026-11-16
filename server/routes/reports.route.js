@@ -8,6 +8,7 @@ import {
    startOfWeek,
 } from "date-fns";
 import Tasks from "../models/Task.js";
+import Projects from "../models/Projects.js";
 const reportRouter = express.Router();
 
 reportRouter.get("/reports/dashboard", async (req, res) => {
@@ -26,20 +27,7 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
          },
          {
             $facet: {
-               totalProjectsSummary: [
-                  {
-                     $group: {
-                        _id: "$project",
-                        count: { $sum: 1 },
-                     },
-                  },
-                  {
-                     $project: {
-                        _id: 0,
-                        count: 1,
-                     },
-                  },
-               ],
+
 
                tasksCompletedSummary: [
                   {
@@ -94,7 +82,7 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
                            $cond: [
                               {
                                  $gt: [
-                                    "$timeToComplete",
+                                    new Date().getDate(),
                                     {
                                        $add: [
                                           { $dayOfMonth: "$createdAt" },
@@ -115,28 +103,7 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
                   { $count: "overdue" },
                ],
 
-               projectsThisMonthSummary: [
-                  {
-                     $match: {
-                        $and: [
-                           { createdAt: { $gte: startOfMonth(new Date()) } },
-                           { createdAt: { $lt: endOfMonth(new Date()) } },
-                        ],
-                     },
-                  },
-                  {
-                     $group: {
-                        _id: "$project",
-                        count: { $sum: 1 },
-                     },
-                  },
-                  {
-                     $project: {
-                        _id: 0,
-                        count: 1,
-                     },
-                  },
-               ],
+
 
                tasksCompletedThisWeekSummary: [
                   {
@@ -195,9 +162,6 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
          },
          {
             $project: {
-               totalProjects: {
-                  $ifNull: [{ $arrayElemAt: ["$totalProjectsSummary.count", 0] }, 0],
-               },
                tasksCompleted: {
                   $ifNull: [{ $arrayElemAt: ["$tasksCompletedSummary.count", 0] }, 0],
                },
@@ -206,12 +170,6 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
                },
                overdue: {
                   $ifNull: [{ $arrayElemAt: ["$overdueSummary.overdue", 0] }, 0],
-               },
-               projectsThisMonth: {
-                  $ifNull: [
-                     { $arrayElemAt: ["$projectsThisMonthSummary.count", 0] },
-                     0,
-                  ],
                },
                tasksCompletedThisWeek: {
                   $ifNull: [
@@ -226,9 +184,75 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
          },
       ]);
 
+      const [projects] = await Projects.aggregate([
+         {
+            $match: {
+               createdAt: {
+                  $gte: startDate,
+                  $lt: endDate,
+               },
+            },
+         },
+         {
+            $facet: {
+               totalProjectsSummary: [
+                  {
+                     $group: {
+                        _id: null,
+                        count: { $sum: 1 },
+                     },
+                  },
+                  {
+                     $project: {
+                        _id: 0,
+                        count: 1,
+                     },
+                  },
+               ],
+
+               projectsThisMonthSummary: [
+                  {
+                     $match: {
+                        $and: [
+                           { createdAt: { $gte: startOfMonth(new Date()) } },
+                           { createdAt: { $lt: endOfMonth(new Date()) } },
+                        ],
+                     },
+                  },
+                  {
+                     $group: {
+                        _id: null,
+                        count: { $sum: 1 },
+                     },
+                  },
+                  {
+                     $project: {
+                        _id: 0,
+                        count: 1,
+                     },
+                  },
+               ],
+            }
+         },
+         {
+            $project: {
+               totalProjects: {
+                  $ifNull: [{ $arrayElemAt: ["$totalProjectsSummary.count", 0] }, 0],
+               },
+               projectsThisMonth: {
+                  $ifNull: [
+                     { $arrayElemAt: ["$projectsThisMonthSummary.count", 0] },
+                     0,
+                  ],
+               },
+            }
+         }
+
+      ])
+
       if (!report)
          return res.status(404).json({ error: "No dashboard reports found." });
-      res.json(report);
+      res.json({ ...report, ...projects });
    } catch (error) {
       res.status(500).json({ error: error.message });
    }
