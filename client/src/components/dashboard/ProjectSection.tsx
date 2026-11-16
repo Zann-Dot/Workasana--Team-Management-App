@@ -70,7 +70,8 @@ function PriorityDot({ priority }: { priority: string }) {
 
 export default function ProjectSection() {
    const [modalOpen, setModalOpen] = useState(false)
-   const { data: PROJECTS, isFetching, isLoading, isError } = useProjects("page=1&limit=4")
+   const { data, isFetching, isLoading, isError } = useProjects("page=1&limit=4")
+   const PROJECTS = data?.projects.filter(p => p.status !== "completed")
    const isProjectLoading = isFetching || isLoading
 
    return (

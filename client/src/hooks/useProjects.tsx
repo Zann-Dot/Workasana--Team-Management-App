@@ -28,6 +28,13 @@ export interface Projects {
     _id: string
 }
 
+export interface ProjectResponse {
+    currentPage: number,
+    projects: Projects[],
+    totalPages: number,
+    totalProjects: number
+}
+
 export function useCreateProject() {
     const queryClient = useQueryClient()
     return useMutation({
@@ -52,7 +59,7 @@ export function useCreateProject() {
 }
 
 export function useProjects(queryParams: string = "") {
-    return useQuery<Projects[]>({
+    return useQuery<ProjectResponse>({
         queryFn: () => fetchProjects(queryParams),
         queryKey: ["projects", { queryParams }],
     })

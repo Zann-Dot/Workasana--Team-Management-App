@@ -92,7 +92,8 @@ interface NewTaskModalProps {
 export default function NewTaskModal({ open, onOpenChange }: NewTaskModalProps) {
    const { mutate: createTask, isSuccess } = useCreateTask();
    const { data: teams } = useTeams()
-   const { data: projects } = useProjects();
+   const { data } = useProjects();
+   const projects = data?.projects;
 
    const [taskName, setTaskName] = useState("")
    const [projectId, setProjectId] = useState<string | null>(null)
