@@ -14,6 +14,13 @@ taskRouter.post(
    async (req, res) => {
       try {
          const taskId = req.query.id?.trim();
+         const { tags } = req.body
+
+         if (Array.isArray(tags) && tags.length > 3)
+            return res
+               .status(400)
+               .json({ error: "Cannot add more than 3 tags." });
+
          if (taskId) {
             const task = await Tasks.findByIdAndUpdate(taskId, req.body, {
                new: true,
