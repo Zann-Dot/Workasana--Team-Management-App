@@ -79,22 +79,16 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
                      $project: {
                         _id: 0,
                         overdue: {
-                           $cond: [
+                           $gt: [
+                              new Date(),
                               {
-                                 $gt: [
-                                    new Date().getDate(),
-                                    {
-                                       $add: [
-                                          { $dayOfMonth: "$createdAt" },
-                                          "$timeToComplete",
-                                       ],
-                                    },
-                                 ],
-                              },
-                              false,
-                              true,
-                           ],
-                        },
+                                 $add: [
+                                    "$createdAt",
+                                    { $multiply: ["$timeToComplete", 86400000] }
+                                 ]
+                              }
+                           ]
+                        }
                      },
                   },
                   {
@@ -102,8 +96,6 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
                   },
                   { $count: "overdue" },
                ],
-
-
 
                tasksCompletedThisWeekSummary: [
                   {
