@@ -6,16 +6,17 @@ import { toast } from "@/components/ui/toast"
 export interface Tasks {
     _id?: string
     name: string
-    project: string
     team: string
-    owners: Users[] | string[]
-    tags: string[]
-    timeToComplete: number | string
-    dueDate?: string
     status: string
+    project: string
     priority: string
-    createdAt?: string
-    updatedAt?: string
+    tags: string[]
+    owners: Users[] | string[]
+    timeToComplete: number | string
+    dueDate?: Date
+    createdAt?: Date
+    updatedAt?: Date,
+    completedAt?: Date
 }
 
 export interface TaskResponse {

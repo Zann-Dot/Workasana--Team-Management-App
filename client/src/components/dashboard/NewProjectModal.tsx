@@ -38,6 +38,7 @@ interface ProjectFormType {
    dueOn: Date | string
    priority: "low" | "medium" | "high"
    description?: string
+   completedAt?: Date
 }
 
 interface PRIORITY_OPTIONS_TYPE {

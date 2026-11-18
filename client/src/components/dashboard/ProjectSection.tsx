@@ -28,6 +28,7 @@ import NewProjectModal from "./NewProjectModal"
 import { useProjects } from "@/hooks/useProjects"
 import { Skeleton } from "../ui/skeleton"
 import { Link, useSearchParams } from "react-router"
+import { format } from "date-fns"
 
 const status = ["In Progress", "In Review", "Completed"]
 
@@ -198,7 +199,7 @@ export default function ProjectSection() {
                                                       weight="duotone"
                                                       className="size-3.5"
                                                    />
-                                                   {project.dueDate}
+                                                   {format(project.dueOn as Date, "MMM dd")}
                                                 </span>
                                              </>
                                           )}

@@ -2,7 +2,7 @@ import { fetchProjects, postProject } from "@/api/projects"
 import { toast } from "@/components/ui/toast"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
-export interface Project {
+export interface ProjectPayload {
     name: string
     teamId: string
     status: string
@@ -12,9 +12,10 @@ export interface Project {
 }
 
 export interface Projects {
-    createdAt: string
-    dueDate: string
-    dueOn: string
+    completedAt?: Date
+    createdAt: Date
+    updatedAt: Date
+    dueOn: Date
     name: string
     priority: string
     status: string
@@ -23,7 +24,6 @@ export interface Projects {
         name: string,
         updatedAt: string
     }
-    updatedAt: string
     __v: number
     _id: string
 }

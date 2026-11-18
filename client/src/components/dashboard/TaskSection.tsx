@@ -22,6 +22,7 @@ import { useGetTasks } from "@/hooks/useTasks"
 import NewTaskModal from "./NewTaskModal"
 import { Skeleton } from "../ui/skeleton"
 import { Separator } from "../ui/separator"
+import { format } from "date-fns"
 
 type TaskFilter = "All" | "In Progress" | "Completed" | "Todo"
 
@@ -214,7 +215,7 @@ export default function TaskSection() {
                                           weight="duotone"
                                           className="size-3.5"
                                        />
-                                       {task.dueDate}
+                                       {format(task.dueDate as Date, "MMM dd")}
                                     </span>
                                     <PriorityDot priority={task.priority} />
                                     <StatusBadge
