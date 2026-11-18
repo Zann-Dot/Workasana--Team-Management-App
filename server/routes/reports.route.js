@@ -249,4 +249,72 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
       res.status(500).json({ error: error.message });
    }
 });
+
+reportRouter.get("/reports/upcoming-deadlines", async (req, res) => {
+   try {
+      const now = new Date();
+      const sevenDaysFromNow = new Date(now.getTime() + 7 * 86400000);
+
+      const upcomingTasks = await Tasks.aggregate([
+         {
+            $match: {
+               status: { $ne: "completed" },
+            },
+         },
+         {
+            $addFields: {
+               computedDueDate: {
+                  $add: [
+                     "$createdAt",
+                     { $multiply: ["$timeToComplete", 86400000] },
+                  ],
+               },
+            },
+         },
+         {
+            $match: {
+               computedDueDate: {
+                  $gte: now,
+                  $lte: sevenDaysFromNow,
+               },
+            },
+         },
+         {
+            $project: {
+               _id: 0,
+               type: { $literal: "task" },
+               name: "$name",
+               priority: "$priority",
+               dueDate: "$dueDate",
+            },
+         },
+      ]);
+
+      const upcomingProjects = await Projects.aggregate([
+         {
+            $match: {
+               status: { $ne: "completed" },
+               dueOn: {
+                  $gte: now,
+                  $lte: sevenDaysFromNow,
+               },
+            },
+         },
+         {
+            $project: {
+               _id: 0,
+               type: { $literal: "project" },
+               name: "$name",
+               priority: "$priority",
+               dueDate: "$dueDate",
+            },
+         },
+      ]);
+
+      const upcomingDeadlines = [...upcomingTasks, ...upcomingProjects];
+      res.json(upcomingDeadlines);
+   } catch (error) {
+      res.status(500).json({ error: error.message });
+   }
+})
 export default reportRouter;
