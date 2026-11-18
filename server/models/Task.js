@@ -64,6 +64,13 @@ taskSchema.pre("findOneAndUpdate", async function () {
 });
 
 taskSchema.pre("save", async function () {
+    if (this.dueDate) return;
+    this.dueDate = new Date(
+        this.createdAt.getFullYear(),
+        this.createdAt.getMonth(),
+        this.createdAt.getDate() + this.timeToComplete,
+    );
+
     const weight = { high: 1, medium: 2, low: 3 };
     this.priorityWeight = weight[this.priority] || 2;
 });
