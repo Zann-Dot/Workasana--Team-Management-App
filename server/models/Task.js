@@ -38,7 +38,7 @@ const taskSchema = new Schema(
             type: Number,
             default: 2,
         },
-        dueDate: { type: Date, required: true },
+        dueDate: { type: Date },
         completedAt: { type: Date },
     },
     { timestamps: true },
