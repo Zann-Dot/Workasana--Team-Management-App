@@ -183,27 +183,29 @@ export default function TaskSection() {
                            {filteredTasks?.map((task) => (
                               <div
                                  key={task._id}
-                                 className="flex flex-wrap items-center gap-3 py-3 first:pt-0 last:pb-0"
+                                 className="flex flex-col items-start md:flex-row md:items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
                               >
-                                 <div
-                                    className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${task.status === "completed"
-                                       ? "border-emerald-500 bg-emerald-500 text-white"
-                                       : "border-muted-foreground/40"
-                                       }`}
-                                 >
-                                    {task.status === "completed" && (
-                                       <CheckCircleIcon weight="fill" className="size-3" />
-                                    )}
-                                 </div>
+                                 <div className="flex items-center gap-3">
+                                    <div
+                                       className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${task.status === "completed"
+                                          ? "border-emerald-500 bg-emerald-500 text-white"
+                                          : "border-muted-foreground/40"
+                                          }`}
+                                    >
+                                       {task.status === "completed" && (
+                                          <CheckCircleIcon weight="fill" className="size-3" />
+                                       )}
+                                    </div>
 
-                                 <span
-                                    className={`flex-1 text-sm font-medium ${task.status === "completed"
-                                       ? "text-muted-foreground line-through"
-                                       : ""
-                                       }`}
-                                 >
-                                    {task.name}
-                                 </span>
+                                    <span
+                                       className={`flex-1 text-sm text-nowrap font-medium ${task.status === "completed"
+                                          ? "text-muted-foreground line-through"
+                                          : ""
+                                          }`}
+                                    >
+                                       {task.name}
+                                    </span>
+                                 </div>
 
                                  <div className="flex flex-wrap items-center gap-2">
                                     <span className="flex items-center gap-1 text-xs text-muted-foreground">

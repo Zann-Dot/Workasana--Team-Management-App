@@ -1,4 +1,4 @@
-import { getDashboardStats } from "@/api/reports";
+import { getDashboardStats, getUpcomingDeadline } from "@/api/reports";
 import { useQuery } from "@tanstack/react-query";
 
 export interface DashboardStats {
@@ -11,9 +11,23 @@ export interface DashboardStats {
     tasksDueToday: number
 }
 
+export interface UpcomingDeadline {
+    type: "task" | "project",
+    name: string,
+    priority: "low" | "medium" | "high",
+    dueDate: Date,
+}
+
 export function useDashboard() {
     return useQuery<DashboardStats>({
         queryKey: ["dashboardStats"],
         queryFn: getDashboardStats
+    })
+}
+
+export function useUpcomingDeadlines() {
+    return useQuery<UpcomingDeadline[]>({
+        queryFn: getUpcomingDeadline,
+        queryKey: ["upcomingDeadlines"]
     })
 }
