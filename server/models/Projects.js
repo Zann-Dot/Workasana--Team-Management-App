@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { format } from "date-fns";
 
 const projectSchema = new mongoose.Schema(
     {
@@ -23,9 +22,6 @@ const projectSchema = new mongoose.Schema(
             type: Date,
             required: true,
         },
-        dueDate: {
-            type: String,
-        },
         priority: {
             type: String,
             required: true,
@@ -33,14 +29,10 @@ const projectSchema = new mongoose.Schema(
             default: "medium",
         },
         description: { type: String },
+        completedAt: { type: Date }
     },
     { timestamps: true },
 );
-
-projectSchema.pre("save", async function () {
-    if (this.dueDate) return;
-    this.dueDate = format(this.dueOn, "MMM dd");
-});
 
 const Projects = mongoose.model("Project", projectSchema);
 export default Projects;

@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import { model, Schema } from "mongoose";
 
 const taskSchema = new Schema(
@@ -27,19 +26,20 @@ const taskSchema = new Schema(
             type: String,
             enum: ["todo", "inprogress", "completed", "blocked"],
             default: "todo",
-            required: true
+            required: true,
         },
-        dueDate: { type: String },
         priority: {
             type: String,
             enum: ["low", "medium", "high"],
             default: "medium",
-            required: true
+            required: true,
         },
         priorityWeight: {
             type: Number,
-            default: 2
-        }
+            default: 2,
+        },
+        dueDate: { type: Date, required: true },
+        completedAt: { type: Date },
     },
     { timestamps: true },
 );
@@ -64,14 +64,6 @@ taskSchema.pre("findOneAndUpdate", async function () {
 });
 
 taskSchema.pre("save", async function () {
-    if (this.dueDate) return;
-    const dueDate = new Date(
-        this.createdAt.getFullYear(),
-        this.createdAt.getMonth(),
-        this.createdAt.getDate() + this.timeToComplete,
-    );
-    this.dueDate = format(dueDate, "MMM dd")
-
     const weight = { high: 1, medium: 2, low: 3 };
     this.priorityWeight = weight[this.priority] || 2;
 });

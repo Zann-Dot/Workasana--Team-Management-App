@@ -27,53 +27,19 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
          },
          {
             $facet: {
-
-
                tasksCompletedSummary: [
-                  {
-                     $group: {
-                        _id: null,
-                        count: {
-                           $sum: {
-                              $cond: [{ $eq: ["$status", "completed"] }, 1, 0],
-                           },
-                        },
-                     },
-                  },
-                  {
-                     $project: {
-                        _id: 0,
-                        count: 1,
-                     },
-                  },
+                  { $match: { status: "completed" } },
+                  { $count: "count" },
                ],
 
                inProgressSummary: [
-                  {
-                     $group: {
-                        _id: null,
-                        count: {
-                           $sum: {
-                              $cond: [{ $eq: ["$status", "inprogress"] }, 1, 0],
-                           },
-                        },
-                     },
-                  },
-                  {
-                     $project: {
-                        _id: 0,
-                        count: 1,
-                     },
-                  },
+                  { $match: { status: { $ne: "completed" } } },
+                  { $count: "count" },
                ],
 
                overdueSummary: [
                   {
-                     $match: {
-                        status: {
-                           $ne: "completed",
-                        },
-                     },
+                     $match: { status: { $ne: "completed" } },
                   },
                   {
                      $project: {
@@ -84,11 +50,11 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
                               {
                                  $add: [
                                     "$createdAt",
-                                    { $multiply: ["$timeToComplete", 86400000] }
-                                 ]
-                              }
-                           ]
-                        }
+                                    { $multiply: ["$timeToComplete", 86400000] },
+                                 ],
+                              },
+                           ],
+                        },
                      },
                   },
                   {
@@ -100,55 +66,27 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
                tasksCompletedThisWeekSummary: [
                   {
                      $match: {
-                        $and: [
-                           { createdAt: { $gte: startOfWeek(new Date()) } },
-                           { createdAt: { $lt: endOfWeek(new Date()) } },
-                        ],
-                     },
-                  },
-                  {
-                     $group: {
-                        _id: null,
-                        count: {
-                           $sum: {
-                              $cond: [{ $eq: ["$status", "completed"] }, 1, 0],
-                           },
+                        status: "completed",
+                        completedAt: {
+                           $gte: startOfWeek(new Date()),
+                           $lt: endOfWeek(new Date()),
                         },
                      },
                   },
-                  {
-                     $project: {
-                        _id: 0,
-                        count: 1,
-                     },
-                  },
+                  { $count: "count" },
                ],
 
                tasksDueTodaySummary: [
                   {
                      $match: {
-                        $and: [
-                           { createdAt: { $gte: startOfToday() } },
-                           { createdAt: { $lt: endOfToday() } },
-                        ],
-                     },
-                  },
-                  {
-                     $group: {
-                        _id: null,
-                        count: {
-                           $sum: {
-                              $cond: [{ $eq: ["$status", "inprogress"] }, 1, 0],
-                           },
+                        status: { $ne: "completed" },
+                        dueDate: {
+                           $gte: startOfToday(),
+                           $lt: endOfToday(),
                         },
                      },
                   },
-                  {
-                     $project: {
-                        _id: 0,
-                        count: 1,
-                     },
-                  },
+                  { $count: "count" },
                ],
             },
          },
@@ -187,44 +125,20 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
          },
          {
             $facet: {
-               totalProjectsSummary: [
-                  {
-                     $group: {
-                        _id: null,
-                        count: { $sum: 1 },
-                     },
-                  },
-                  {
-                     $project: {
-                        _id: 0,
-                        count: 1,
-                     },
-                  },
-               ],
+               totalProjectsSummary: [{ $count: "count" }],
 
                projectsThisMonthSummary: [
                   {
                      $match: {
-                        $and: [
-                           { createdAt: { $gte: startOfMonth(new Date()) } },
-                           { createdAt: { $lt: endOfMonth(new Date()) } },
-                        ],
+                        createdAt: {
+                           $gte: startOfMonth(new Date()),
+                           $lt: endOfMonth(new Date()),
+                        },
                      },
                   },
-                  {
-                     $group: {
-                        _id: null,
-                        count: { $sum: 1 },
-                     },
-                  },
-                  {
-                     $project: {
-                        _id: 0,
-                        count: 1,
-                     },
-                  },
+                  { $count: "count" },
                ],
-            }
+            },
          },
          {
             $project: {
@@ -237,12 +151,11 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
                      0,
                   ],
                },
-            }
-         }
+            },
+         },
+      ]);
 
-      ])
-
-      if (!report)
+      if (report == null)
          return res.status(404).json({ error: "No dashboard reports found." });
       res.json({ ...report, ...projects });
    } catch (error) {
@@ -259,21 +172,7 @@ reportRouter.get("/reports/upcoming-deadlines", async (req, res) => {
          {
             $match: {
                status: { $ne: "completed" },
-            },
-         },
-         {
-            $addFields: {
-               computedDueDate: {
-                  $add: [
-                     "$createdAt",
-                     { $multiply: ["$timeToComplete", 86400000] },
-                  ],
-               },
-            },
-         },
-         {
-            $match: {
-               computedDueDate: {
+               dueDate: {
                   $gte: now,
                   $lte: sevenDaysFromNow,
                },
@@ -316,5 +215,5 @@ reportRouter.get("/reports/upcoming-deadlines", async (req, res) => {
    } catch (error) {
       res.status(500).json({ error: error.message });
    }
-})
+});
 export default reportRouter;
