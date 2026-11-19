@@ -1,6 +1,5 @@
-import { CalendarBlankIcon } from "@phosphor-icons/react"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { UsersThreeIcon, WarningIcon } from "@phosphor-icons/react"
+import { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount } from "@/components/ui/avatar"
 import {
    Card,
    CardContent,
@@ -11,14 +10,16 @@ import {
 import ProjectSection from "@/components/dashboard/ProjectSection"
 import TaskSection from "@/components/dashboard/TaskSection"
 import { getStats } from "@/utilis/getDashboardStats"
-import { useDashboard } from "@/hooks/useReports"
+import { useDashboard, useOverdues } from "@/hooks/useReports"
 import { Skeleton } from "@/components/ui/skeleton"
 import UpcomingDeadline from "@/components/dashboard/UpcomingDeadline"
+import { Badge } from "@/components/ui/badge"
 
 
 
 export default function Dashboard() {
    const { isLoading, isFetching } = useDashboard()
+   const { data: overdues } = useOverdues()
    const isStatsLoading = isFetching || isLoading
    const STATS = getStats()
 
@@ -74,58 +75,40 @@ export default function Dashboard() {
                <div className="grid gap-4 sm:grid-cols-2">
                   <Card>
                      <CardHeader className="border-b pb-4">
-                        <CardTitle className="text-base">Team Activity</CardTitle>
+                        <CardTitle className="text-base">Overdue Tasks</CardTitle>
                         <CardDescription>
-                           Recent actions by your teammates
+                           Needs Attention!
                         </CardDescription>
                      </CardHeader>
                      <CardContent className="pt-4">
                         <ul className="space-y-3">
-                           {[
-                              {
-                                 user: "SK",
-                                 name: "Sara Kim",
-                                 action: "completed",
-                                 item: "Brand Audit report",
-                                 time: "2m ago",
-                              },
-                              {
-                                 user: "RK",
-                                 name: "Raj Kumar",
-                                 action: "commented on",
-                                 item: "API auth task",
-                                 time: "18m ago",
-                              },
-                              {
-                                 user: "LM",
-                                 name: "Leo Martinez",
-                                 action: "moved",
-                                 item: "Mockup v3 to In Review",
-                                 time: "1h ago",
-                              },
-                              {
-                                 user: "AJ",
-                                 name: "Alex Johnson",
-                                 action: "created",
-                                 item: "Mobile push notification task",
-                                 time: "3h ago",
-                              },
-                           ].map((a) => (
-                              <li key={a.time} className="flex items-start gap-2.5">
-                                 <Avatar size="sm" className="mt-0.5 shrink-0">
-                                    <AvatarFallback className="text-[10px]">
-                                       {a.user}
-                                    </AvatarFallback>
-                                 </Avatar>
-                                 <p className="text-xs leading-relaxed">
-                                    <span className="font-semibold">{a.name}</span>{" "}
-                                    {a.action}{" "}
-                                    <span className="text-muted-foreground">
-                                       "{a.item}"
-                                    </span>
-                                 </p>
-                                 <span className="ml-auto shrink-0 text-xs text-muted-foreground">
-                                    {a.time}
+                           {[{ _id: "adnjandkn", name: "ashi ad adaad advad adadv", team: "Dev", owners: ["anay", "nishant"] }]?.map((o) => (
+                              <li key={o._id} className="flex items-center justify-between gap-2.5">
+                                 <div className="flex items-center gap-1">
+                                    <WarningIcon className="text-destructive" />
+                                    {o.name}
+                                 </div>
+                                 <span className="flex items-center gap-2.5">
+                                    <Badge variant="secondary" className="text-xs">
+                                       {o.team}
+                                    </Badge>
+                                    <div className="flex items-center gap-1 text-muted-foreground">
+                                       <UsersThreeIcon size={18} weight="duotone" />
+                                       <AvatarGroup>
+                                          {o.owners.slice(0, 3).map((m, i) => (
+                                             <Avatar key={i} size="sm">
+                                                <AvatarFallback className="text-[10px]">
+                                                   {m.slice(0, 1).toUpperCase()}
+                                                </AvatarFallback>
+                                             </Avatar>
+                                          ))}
+                                          {o.owners.length > 3 && (
+                                             <AvatarGroupCount className="text-[10px]">
+                                                +{o.owners.length - 3}
+                                             </AvatarGroupCount>
+                                          )}
+                                       </AvatarGroup>
+                                    </div>
                                  </span>
                               </li>
                            ))}
