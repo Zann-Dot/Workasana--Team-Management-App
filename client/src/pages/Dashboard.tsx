@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge"
 
 export default function Dashboard() {
    const { isLoading, isFetching } = useDashboard()
-   const { data: overdues } = useOverdues()
+   const { data: overdues, isLoading: isOverdueLoading } = useOverdues()
    const isStatsLoading = isFetching || isLoading
    const STATS = getStats()
 
@@ -81,38 +81,52 @@ export default function Dashboard() {
                         </CardDescription>
                      </CardHeader>
                      <CardContent className="pt-4">
-                        <ul className="space-y-3">
-                           {overdues?.map((o) => (
-                              <li key={o._id} className="flex items-center justify-between gap-2.5">
-                                 <div className="flex items-center gap-1">
-                                    <WarningIcon className="text-destructive" />
-                                    {o.name}
-                                 </div>
-                                 <span className="flex items-center gap-2.5">
-                                    <Badge variant="secondary" className="text-xs">
-                                       {o.team}
-                                    </Badge>
-                                    <div className="flex items-center gap-1 text-muted-foreground">
-                                       <UsersThreeIcon size={18} weight="duotone" />
-                                       <AvatarGroup>
-                                          {o.owners.slice(0, 3).map((m, i) => (
-                                             <Avatar key={i} size="sm">
-                                                <AvatarFallback className="text-[10px]">
-                                                   {m.slice(0, 1).toUpperCase()}
-                                                </AvatarFallback>
-                                             </Avatar>
-                                          ))}
-                                          {o.owners.length > 3 && (
-                                             <AvatarGroupCount className="text-[10px]">
-                                                +{o.owners.length - 3}
-                                             </AvatarGroupCount>
-                                          )}
-                                       </AvatarGroup>
+                        {isOverdueLoading ? (
+                           <ul className="space-y-3">
+                              {Array.from({ length: 3 }, (_, i) => (
+                                 <li key={i} className="flex items-center justify-between gap-2.5 mb-4">
+                                    <Skeleton className="h-3 w-80" />
+                                    <span className="flex items-center gap-2.5">
+                                       <Skeleton className="h-3 w-10" />
+                                       <Skeleton className="h-3 w-10" />
+                                    </span>
+                                 </li>
+                              ))}
+                           </ul>
+                        ) : (
+                           <ul className="space-y-3">
+                              {overdues?.map((o) => (
+                                 <li key={o._id} className="flex items-center justify-between gap-2.5">
+                                    <div className="flex items-center gap-1">
+                                       <WarningIcon className="text-destructive" />
+                                       {o.name}
                                     </div>
-                                 </span>
-                              </li>
-                           ))}
-                        </ul>
+                                    <span className="flex items-center gap-2.5">
+                                       <Badge variant="secondary" className="text-xs">
+                                          {o.team}
+                                       </Badge>
+                                       <div className="flex items-center gap-1 text-muted-foreground">
+                                          <UsersThreeIcon size={18} weight="duotone" />
+                                          <AvatarGroup>
+                                             {o.owners.slice(0, 3).map((m, i) => (
+                                                <Avatar key={i} size="sm">
+                                                   <AvatarFallback className="text-[10px]">
+                                                      {m.slice(0, 1).toUpperCase()}
+                                                   </AvatarFallback>
+                                                </Avatar>
+                                             ))}
+                                             {o.owners.length > 3 && (
+                                                <AvatarGroupCount className="text-[10px]">
+                                                   +{o.owners.length - 3}
+                                                </AvatarGroupCount>
+                                             )}
+                                          </AvatarGroup>
+                                       </div>
+                                    </span>
+                                 </li>
+                              ))}
+                           </ul>
+                        )}
                      </CardContent>
                   </Card>
 
