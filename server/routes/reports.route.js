@@ -39,26 +39,10 @@ reportRouter.get("/reports/dashboard", async (req, res) => {
 
                overdueSummary: [
                   {
-                     $match: { status: { $ne: "completed" } },
-                  },
-                  {
-                     $project: {
-                        _id: 0,
-                        overdue: {
-                           $gt: [
-                              new Date(),
-                              {
-                                 $add: [
-                                    "$createdAt",
-                                    { $multiply: ["$timeToComplete", 86400000] },
-                                 ],
-                              },
-                           ],
-                        },
+                     $match: {
+                        status: { $ne: "completed" },
+                        dueDate: { $lt: new Date() }
                      },
-                  },
-                  {
-                     $match: { overdue: true },
                   },
                   { $count: "overdue" },
                ],
@@ -212,6 +196,47 @@ reportRouter.get("/reports/upcoming-deadlines", async (req, res) => {
 
       const upcomingDeadlines = [...upcomingTasks, ...upcomingProjects];
       res.json(upcomingDeadlines);
+   } catch (error) {
+      res.status(500).json({ error: error.message });
+   }
+});
+
+reportRouter.get("/reports/overdues", async (req, res) => {
+   const now = new Date();
+   try {
+      const report = await Tasks.aggregate([
+         {
+            $match: {
+               status: { $ne: "completed" },
+               dueDate: { $lt: now }
+            }
+         },
+         {
+            $lookup: {
+               from: "teams",
+               localField: "team",
+               foreignField: "_id",
+               as: "teamDoc",
+            },
+         },
+         {
+            $lookup: {
+               from: "users",
+               localField: "owners",
+               foreignField: "_id",
+               as: "ownerDocs",
+            },
+         },
+         {
+            $project: {
+               _id: 1,
+               name: 1,
+               team: { $arrayElemAt: ["$teamDoc.name", 0] },
+               owners: "$ownerDocs.name",
+            },
+         },
+      ]);
+      res.json(report);
    } catch (error) {
       res.status(500).json({ error: error.message });
    }
