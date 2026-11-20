@@ -111,7 +111,7 @@ export default function Dashboard() {
                                              {o.owners.slice(0, 3).map((m, i) => (
                                                 <Avatar key={i} size="sm">
                                                    <AvatarFallback className="text-[10px]">
-                                                      {m.slice(0, 1).toUpperCase()}
+                                                      {m.split(" ").map(s => s.charAt(0).toUpperCase()).join("")}
                                                    </AvatarFallback>
                                                 </Avatar>
                                              ))}
